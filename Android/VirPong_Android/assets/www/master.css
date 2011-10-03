@@ -10,23 +10,6 @@
     border-top:1px solid #393939;
   }
 
-  #info{
-  	//This does the stuff around the "info" block at the top
-    background:#F0000F;
-    border: 1px solid #ffd324;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    clear:both;
-    margin:15px 6px 0;
-    width:295px;
-    padding:4px 0px 2px 10px;
-  }
-  
-  #info > h4{
-    font-size:.95em;
-    margin:5px 0;
-  }
- 	
   #stage.theme{
     padding-top:3px;
   }
@@ -98,3 +81,24 @@
   	padding:1.2em 0;
   }
 
+ /* Game Buttons */
+  #gameStage.theme a.btn{
+  	border: 1px solid #555;
+  	-webkit-border-radius: 5px;
+  	border-radius: 5px;
+  	text-align:center;
+  	display:block;
+  	float:left;
+  	background:#F0E700;
+  	width:150px;
+  	/*Font color on buttons*/
+  	color:#000000;
+  	font-size:1.1em;
+  	text-decoration:none;
+  	padding:1.2em 0;
+  	margin:3px 0px 3px 5px;
+  }
+  #gameStage.theme a.btn.large{
+  	width:308px;
+  	padding:1.2em 0;
+  }
