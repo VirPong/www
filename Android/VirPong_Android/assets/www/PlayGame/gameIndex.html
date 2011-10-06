@@ -9,7 +9,28 @@
 	  <script type="text/javascript" charset="utf-8" src="game.js"></script>
   </head>
 <body id="gameStage" class="theme">
+	<pre>
+	[code]
+	alert("Initializing!!!");
+	// new socket
+	socket = new WebSocket('http://cs340-serv:8000');
+ 
+	// push a message after the connection is established.
+	socket.onopen = function() {
+ 	socket.send("Hello World!");
+	};
+	// alerts message pushed from server
+	socket.onmessage = function(msg) {
+ 	alert(JSON.stringify(msg.data));
+	};
+	// alert close event
+	socket.onclose = function() {
+ 	alert('closed');
+	};
+	alert("Finishing initialization.");
+	[/code]
+	</pre>
 	<h1>Get ready. . .</h1>
-		<a href="#" class="btn large" onclick="promptLogin()">Let's play pong!</a>
+		<a href="http://10.150.1.204:8000" class="btn large" onclick="">Let's play pong!</a>
 </body>
 </html>
