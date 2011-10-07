@@ -10,7 +10,11 @@
 
   </head>
   <body onload="init();" id="stage" class="theme">
-    <h1>Welcome to VirPong!</h1>
+    <div id="info">
+        <img src="logo-blue.gif"
+         width="210"
+         height="150">
+     </div>    
     <a href="PlayGame/gameIndex.html" class="btn large">Play a game!</a>
     <a href="#" class="btn large" onclick="get_wiiPut();">Get wiiPut.</a>
 	<a href="#" class="btn large" onclick="display_wiiPut();">Display the wiiPut.</a>
@@ -18,8 +22,5 @@
     <div id="viewport" class="viewport" style="display: none;">       
       <img style="width:60px;height:60px" id="test_img" src=""> </img>
     </div> 
-    <textarea name="textbox" rows="200" cols="200" wrap="hard" autofocus="autofocus">
-		At W3Schools you will find all the Web-building tutorials you need, from basic HTML to advanced XML, SQL, ASP, and PHP.
-	</textarea>
   </body>
 </html>
