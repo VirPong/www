@@ -1,18 +1,199 @@
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+	    
+	<script type="text/javascript">
+		var context;
+		
+		var frameX = 300;
+		var frameY = 600;
+		]
+		var xBall=100;  //initial ball coords
+		var yBall=200;  //initial ball coords
+		var dx=5; 
+		var dy=5; 
+		
+		var paddleSize = 100;
+		var leftPad = (frameY/2) - paddleSize/2;  //yBall position of paddles init in the middle
+		var rightPad = (frameY/2) - paddleSize/2
+		
+		var scoreLeft = 0;
+		var scoreRight = 0;
+		
+		function doit(e) //this func does thing just used for testing to see which keys were getting pressed
+		{
+		        var whichKey = (document.all)?event.keyCode:e.keyCode; 
+		        alert(whichKey+"\n"+String.fromCharCode(whichKey))
+		}
+		
+		function movePaddle(e)
+		{
+		        var evntObj = (document.all)?event.keyCode:e.keyCode;
+		        //var unicode = evntObj.charCode;
+		        var actualKey = String.fromCharCode(evntObj);
+		        //alert(evntObj + "\n" + actualKey);
+		       
+		        if(actualKey == "W"){ //check which key was pressed
+		                if(leftPad > 0){ // do nothing if it would move paddle out of frame
+		                        leftPad = leftPad - 50; 
+		                }
+		        }
+		    if(actualKey == "S")
+		    {
+		         if(leftPad < (700 - paddleSize)){
+		                 leftPad = leftPad + 50;
+		         }
+		    }
+		    if(actualKey == "I"){
+		         if(rightPad > 0){
+		                 rightPad = rightPad - 50;
+		         }
+		    }
+		    if(actualKey == "K"){
+		         if(rightPad < (700 - paddleSize)){
+		                 rightPad = rightPad + 50;
+		         }
+		    }
+		}
+		
+		
+		function init()
+		{
+		  context= myCanvas.getContext('2d');
+		  setInterval(draw,1);
+		}
+		
+		
+		
+		function drawRect(a, b, c, d)
+		{
+		        context.save();
+		       
+		        context.beginPath();
+		        context.fillStyle = "rgb(0,200,0)"; //color to fill shape in with
+		        context.rect(a,b,c,d); //draws rect with top left corner a,b
+		    context.closePath();
+		    context.fill();
+		 
+		    context.restore();
+		}
+		function drawBall(a, b)
+		{
+		  context.save();
+		 
+		  context.beginPath();
+		  context.fillStyle = "rgb(200,0,0)"; //color to fill shape in with    
+		 
+		  context.arc(xBall,yBall,30,0,Math.PI*2,true);
+		  context.closePath();
+		  context.fill();
+		 
+		  context.restore();
+		}
+		
+		function drawScore(pos){
+		  context.fillStyle    = '#00f';
+		  context.font         = 'bold 50px sans-serif';
+		  context.textBaseline = 'top';
+		 
+		 
+		  if(pos < 600){
+		         var score;
+		         score = String(scoreLeft);
+		         context.fillText('Player 1: ' + score, pos, 10);
+		  }
+		  if(pos > 600){
+		         var score;
+		         score = String(scoreRight);
+		         context.fillText('Player 2: ' + score, pos,10);
+		  }
+		 
+		}
+		
+		
+		function draw()
+		{
+		  context.clearRect(0,0, frameX,frameY); //clear the frame
+		 
+		  drawBall(xBall,yBall);
+		 
+		  drawRect(0,leftPad,10, paddleSize);
+		  drawRect(1240,rightPad,10,paddleSize);
+		 
+		  drawScore(150);
+		  drawScore(850);
+		 
+		  // Boundary Logic for bouncing off the walls
+		 
+		// if( xBall<0 || xBall>frameX) 
+		// {
+		         // dx = -dx;  //change xBall direction if you go off screen....
+		// }
+		if( yBall<0 || yBall>frameY)
+		{
+		        dy = -dy;  //change yBall direction if you go off screen....
+		}
+		
+		 //Paddle Boundary Logic
+		 
+		if((xBall <= 30) && (xBall > 0) && (yBall > leftPad) && (yBall < (leftPad + paddleSize)))  //if it hits the left paddle
+		{
+		        dx = -1.2*dx; //get faster after you hit it
+		}
+		if((xBall >= 1220) && (xBall < 1250) && (yBall > rightPad) && (yBall < (rightPad + paddleSize)))  //if it hits the right paddle
+		{
+		        dx = -1.2*dx;
+		}
+		
+		//if ball goes out of frame reset in the middle and put to default speed and increment score...
+		
+		if(xBall < -150){
+		        xBall = 625;
+		        yBall = 350;
+		        dx = 5;
+		        dy = 5;
+		        socreRight++;
+		}
+		if(xBall > 1450){
+		        xBall = 625;
+		        yBall = 350;
+		        dx = 5;
+		        dy = 5;
+		        scoreLeft++;
+		}
+		
+		
+		xBall+=dx;
+		yBall+=dy;
+		}
+		
+		document.onkeydown = movePaddle; //call movePaddle whenever any key is pressed
+		
+		
+		
+	</script>
 <style type="text/css">
-<!--
-canvas
-	{border:4px solid #A0A0A0;
-	background:black;
-	display:block}
--->
+            canvas {
+                border: 4px solid #A0A0A0;
+                background: black;
+                display: block;
+            }
 </style>
+
+<head>
+<title>Pieter Sucks</title>
 </head>
-<body>
- <p>Play (press Alt&#43;1)<br>
-Pause (press Alt&#43;2)<br>
-</p>
+
+<body onLoad="init();">
+  <canvas id="myCanvas" width="310" height="600" >
+  </canvas>
+ 
+  <embed src="yourfile.wav" autostart="false" id="sound" loop="true"></embed>
+  <form><p>
+  <input type="radio" id="cbplay" name="cb" checked="true" accesskey="1"/>Play (press Alt+1)<br />
+  <input type="radio" id="cbpause" name="cb" accesskey="2"/>Pause (press Alt+2)</br />
+  </p></form>
+
+ 
 </body>
+       
+       
 </html>
