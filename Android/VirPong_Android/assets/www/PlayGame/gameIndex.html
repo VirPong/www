@@ -3,29 +3,26 @@
 	<script type="text/javascript">
 		var context;
 		
-		var frameX = 300;
-		var frameY = 600;
-		]
-		var xBall=100;  //initial ball coords
-		var yBall=200;  //initial ball coords
-		var dx=5; 
-		var dy=5; 
+		var frameX = 210;
+		var frameY = 320;
 		
-		var paddleSize = 100;
+		var xBall=(frameX/2);  //initial ball coords
+		var yBall=(frameY/2);  //initial ball coords
+		var dx=1; //ball motion in x
+		var dy=2; //ball motion in y
+		var ballRadius = 10;
+		
+		var paddleSize = frameY/8;//height
+		var paddleWidth = 10;
 		var leftPad = (frameY/2) - paddleSize/2;  //yBall position of paddles init in the middle
 		var rightPad = (frameY/2) - paddleSize/2
+		
+		var motionStep = frameY/10 //reaction distance to a motion command
 		
 		var scoreLeft = 0;
 		var scoreRight = 0;
 		
-		function doit(e) //this func does thing just used for testing to see which keys were getting pressed
-		{
-		        var whichKey = (document.all)?event.keyCode:e.keyCode; 
-		        alert(whichKey+"\n"+String.fromCharCode(whichKey))
-		}
-		
-		function movePaddle(e)
-		{
+		function movePaddle(e){
 		        var evntObj = (document.all)?event.keyCode:e.keyCode;
 		        //var unicode = evntObj.charCode;
 		        var actualKey = String.fromCharCode(evntObj);
@@ -33,23 +30,22 @@
 		       
 		        if(actualKey == "W"){ //check which key was pressed
 		                if(leftPad > 0){ // do nothing if it would move paddle out of frame
-		                        leftPad = leftPad - 50; 
+		                        leftPad = leftPad - motionStep; 
 		                }
 		        }
-		    if(actualKey == "S")
-		    {
-		         if(leftPad < (700 - paddleSize)){
-		                 leftPad = leftPad + 50;
+		    if(actualKey == "S"){
+		         if(leftPad < (frameY - paddleSize)){
+		                 leftPad = leftPad + motionStep;
 		         }
 		    }
 		    if(actualKey == "I"){
 		         if(rightPad > 0){
-		                 rightPad = rightPad - 50;
+		                 rightPad = rightPad - motionStep;
 		         }
 		    }
 		    if(actualKey == "K"){
-		         if(rightPad < (700 - paddleSize)){
-		                 rightPad = rightPad + 50;
+		         if(rightPad < (frameY - paddleSize)){
+		                 rightPad = rightPad + motionStep;
 		         }
 		    }
 		}
@@ -63,12 +59,12 @@
 		
 		
 		
-		function drawRect(a, b, c, d)
+		function drawRect(a, b, c, d, col)
 		{
 		        context.save();
 		       
 		        context.beginPath();
-		        context.fillStyle = "rgb(0,200,0)"; //color to fill shape in with
+		        context.fillStyle = col; //color to fill shape in with
 		        context.rect(a,b,c,d); //draws rect with top left corner a,b
 		    context.closePath();
 		    context.fill();
@@ -82,7 +78,7 @@
 		  context.beginPath();
 		  context.fillStyle = "rgb(200,0,0)"; //color to fill shape in with    
 		 
-		  context.arc(xBall,yBall,30,0,Math.PI*2,true);
+		  context.arc(xBall,yBall,ballRadius,0,Math.PI*2,true);
 		  context.closePath();
 		  context.fill();
 		 
@@ -90,6 +86,7 @@
 		}
 		
 		function drawScore(pos){
+			//pos determines which side to draw score on, based on orientation either side of roughly midpoint
 		  context.fillStyle    = '#00f';
 		  context.font         = 'bold 50px sans-serif';
 		  context.textBaseline = 'top';
@@ -115,11 +112,11 @@
 		 
 		  drawBall(xBall,yBall);
 		 
-		  drawRect(0,leftPad,10, paddleSize);
-		  drawRect(1240,rightPad,10,paddleSize);
+		  drawRect(0,leftPad,paddleWidth, paddleSize, "rgb(0,200,0)");//xpos, ypos, width, height
+		  drawRect(frameX-paddleWidth,rightPad,paddleWidth,paddleSize, "rgb(255,0,0)");
 		 
-		  drawScore(150);
-		  drawScore(850);
+		  //drawScore(150);
+		  //drawScore(850);
 		 
 		  // Boundary Logic for bouncing off the walls
 		 
@@ -136,27 +133,27 @@
 		 
 		if((xBall <= 30) && (xBall > 0) && (yBall > leftPad) && (yBall < (leftPad + paddleSize)))  //if it hits the left paddle
 		{
-		        dx = -1.2*dx; //get faster after you hit it
+		        dx = -1.1*dx; //get faster after you hit it
 		}
 		if((xBall >= 1220) && (xBall < 1250) && (yBall > rightPad) && (yBall < (rightPad + paddleSize)))  //if it hits the right paddle
 		{
-		        dx = -1.2*dx;
+		        dx = -1.1*dx;
 		}
 		
 		//if ball goes out of frame reset in the middle and put to default speed and increment score...
 		
 		if(xBall < -150){
-		        xBall = 625;
-		        yBall = 350;
-		        dx = 5;
-		        dy = 5;
-		        socreRight++;
+		        xBall = frameX/2;
+		        yBall = frameY/2;
+		        dx = 1;
+		        dy = 2;
+		        scoreRight++;
 		}
 		if(xBall > 1450){
-		        xBall = 625;
-		        yBall = 350;
-		        dx = 5;
-		        dy = 5;
+		        xBall = frameX/2;
+		        yBall = frameY/2;
+		        dx = 1;
+		        dy = 2;
 		        scoreLeft++;
 		}
 		
@@ -183,7 +180,7 @@
 </head>
 
 <body onLoad="init();">
-  <canvas id="myCanvas" width="310" height="600" >
+  <canvas id="myCanvas" width="210" height="320" >
   </canvas>
  
   <embed src="yourfile.wav" autostart="false" id="sound" loop="true"></embed>
@@ -192,7 +189,6 @@
   <input type="radio" id="cbpause" name="cb" accesskey="2"/>Pause (press Alt+2)</br />
   </p></form>
 
- 
 </body>
        
        
