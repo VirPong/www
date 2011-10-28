@@ -1,16 +1,18 @@
 /**
 * The file establishes server socket communication for gameplay.
 * @author Kyle Wenholz
+* @author Jillian Andersen
 */
 
-
+//Useful variables
 var name;
 var pass;
-
-
-
-// The "document.addEventListener" contains reactions to information sent by the server.   
+var pong;
+//The "document.addEventListener" contains reactions to information sent by the server.   
 document.addEventListener("DOMContentLoaded", function() {
+	pong = new Pong(updatePaddle, sendScore);
+	pong.draw();
+	document.onkeydown = pong.movePaddle; //call movePaddle whenever any key is pressed
 	//The DOMContentLoaded event happens when the parsing of the current page
 	//is complete. This means that it only tries to connect when it is done
 	//parsing.
@@ -27,26 +29,24 @@ document.addEventListener("DOMContentLoaded", function() {
 	  });
 	  //Gets a reference to which paddle the user is 
 	  socket.on("paddleNum", function(data){
-		 WHAT_PADDLE_AM_I = data.paddleNum; 
+		 pong.WHAT_PADDLE_AM_I = data.paddleNum; 
 	  });
 	  //Receives the game state from the server and draws the screen
 	  socket.on("updateGame", function(data){//expecting arrays for paddle1, paddle2, ballPos
-		 leftPad = data.paddle[0];
-		 rightPad= data.paddle[1];
-		 draw();
+		 pong.leftPad = data.paddle[0];
+		 pong.rightPad= data.paddle[1];
+		 pong.draw();
 		 //draw(data.ballPos[0], data.ballPos[1]);
 	  });
 	  
 	  //Sends client data
 	  clientType();
-	  //alert("I tried to do server stuff!");
-	  p = new Pong();
-	  p.draw(0, 0, 0, "rgb(0,200,0)");
+	  alert("I tried to do server stuff!");
 });
 
 /**
- * Alert the server of our player type.
- */
+* Alert the server of our player type.
+*/
 function clientType(){
 	//alert("Sending client type");
 	//emit sends information to the server. The data sent is a generic object that has a type property set to player
@@ -54,20 +54,21 @@ function clientType(){
 };
 
 /**
- * Informs the server that the paddle position has changed.
- * @param position
- */
+* Informs the server that the paddle position has changed.
+* @param position
+*/
 function updatePaddle(position){
 	//alert("update paddle");
 	socket.emit("updatePaddle", {pos: position});
 };
 
 /**
- * Informs the server that a score has occured.
- */
-function sendScore(){
+* Informs the server that a score has occured.
+*/
+function sendScore(scoreLeft, scoreRight){
 	socket.emit("score", {left: scoreLeft, right: scoreRight});
 };
+
 
 /**
 * Prompts the user for login
@@ -78,10 +79,10 @@ function promptLogin(){
 		//called when authentication was successful
 		var onSuccess = function(){
 			//Initialize the game!
-		}
+		};
 		var onFailure = function(){
 			promptLogin();
-		}
+		};
 		authenticate(name, pass, onSuccess, onFailure);
 			
 }
@@ -106,7 +107,7 @@ function authenticate(user, pass, success, failure){
         	}
        
     	}
-    }
+    };
     //actually send the request to the server
     xhr.send(null);
 }
