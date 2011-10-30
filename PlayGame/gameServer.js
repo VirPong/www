@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	//The DOMContentLoaded event happens when the parsing of the current page
 	//is complete. This means that it only tries to connect when it is done
 	//parsing.
-	  socket = io.connect("10.150.1.204:3000");
+	  socket = io.connect("10.150.1.204:3001");
 	  /*socket.on("gameStart", function (data) {//expecting a full start of game state
 		  leftPad = data.paddle1;
 		  rightPad = data.paddle2;
