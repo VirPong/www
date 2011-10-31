@@ -3,8 +3,8 @@ var pass;
 
 var context;//holds the canvas
 
-var frameX = 210;
-var frameY = 320;
+var frameX = window.innerWidth-100;
+var frameY = window.innerHeight-100;
 
 var xBall=(frameX/2); //initial ball coords
 var yBall=(frameY/2); //initial ball coords
@@ -33,6 +33,9 @@ var pieterMode = 0;
  */
 function initClient(){
 	context= document.getElementById("gameCanvas").getContext("2d");
+    context.canvas.width = window.innerWidth-100;
+    context.canvas.height = window.innerHeight-100;
+
 }
 
 /**
@@ -89,6 +92,7 @@ function moveMyPaddle(actualKey){
  * Draws the game state.
  */
 function draw(){
+    
 	context.clearRect(0,0, frameX,frameY); //clear the frame
 
 	if(pieterMode == 1){
@@ -128,7 +132,7 @@ function drawRect(a, b, c, d, col){
 function drawBall(){
 	context.save();
 
-	ballPaddleLogic();
+	//ballPaddleLogic();
 
 	context.beginPath();
 	context.fillStyle = "rgb(200,0,0)"; //color to fill shape in with
@@ -228,6 +232,8 @@ draw();
 	socket.on("updateGame", function(data){//expecting arrays for paddle1, paddle2, ballPos
 		leftPad = data.paddle[0];
 		rightPad= data.paddle[1];
+              xBall = data.ballPos[0];
+              yBall = data.ballPos[1];
 		draw();
 //		draw(data.ballPos[0], data.ballPos[1]);
 	});
