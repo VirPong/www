@@ -8,15 +8,16 @@
 var name;
 var pass;
 var pong;
-//The "document.addEventListener" contains reactions to information sent by the server.   
+var socket;
+/**
+ * The "document.addEventListener" contains reactions to information sent by the server.   
+ */
 document.addEventListener("DOMContentLoaded", function() {
-	pong = new Pong(updatePaddle, sendScore);
-	pong.draw();
-	document.onkeydown = pong.movePaddle; //call movePaddle whenever any key is pressed
+	//alert("made pong");
 	//The DOMContentLoaded event happens when the parsing of the current page
 	//is complete. This means that it only tries to connect when it is done
 	//parsing.
-	  socket = io.connect("10.150.1.204:3001");
+	  socket = io.connect("10.150.1.204:3000");
 	  /*socket.on("gameStart", function (data) {//expecting a full start of game state
 		  leftPad = data.paddle1;
 		  rightPad = data.paddle2;
@@ -38,10 +39,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		 pong.draw();
 		 //draw(data.ballPos[0], data.ballPos[1]);
 	  });
-	  
+	  pong = new Pong(socket);
 	  //Sends client data
 	  clientType();
-	  alert("I tried to do server stuff!");
+	  //alert("I tried to do server stuff!");
+	  document.onkeydown = pong.movePaddle; //call movePaddle whenever any key is pressed
 });
 
 /**
@@ -50,25 +52,8 @@ document.addEventListener("DOMContentLoaded", function() {
 function clientType(){
 	//alert("Sending client type");
 	//emit sends information to the server. The data sent is a generic object that has a type property set to player
-	socket.emit("clientType", {type: "player"});
+	this.socket.emit("clientType", {type: "player"});
 };
-
-/**
-* Informs the server that the paddle position has changed.
-* @param position
-*/
-function updatePaddle(position){
-	//alert("update paddle");
-	socket.emit("updatePaddle", {pos: position});
-};
-
-/**
-* Informs the server that a score has occured.
-*/
-function sendScore(scoreLeft, scoreRight){
-	socket.emit("score", {left: scoreLeft, right: scoreRight});
-};
-
 
 /**
 * Prompts the user for login

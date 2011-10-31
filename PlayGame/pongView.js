@@ -9,11 +9,13 @@
 (function(exports){
 	/**
 	 * Constructor for the Pong environment.
+	 * @param
+	 * @param
+	 * @param
 	 */
-	var Pong = function(updatePaddle, sendScore){
+	var Pong = function(sock){
 		//FIELDS
-		this.sendScore = sendScore;//function to send score to server
-		this.updatePaddle = updatePaddle;//function for telling the server to update the paddle
+		this.socket = sock;
 		this.context = document.getElementById("gameCanvas").getContext("2d");//holds the canvas
 	
 		this.frameX = 210;
@@ -40,7 +42,6 @@
 		this.pieterMode = 0;
 		
 		this.WHITE = "rgb(248,248,245)";
-	
 		//this.pongSound = new Media("pong2.wav");
 	};
 	/**
@@ -49,15 +50,15 @@
 	 */
 	Pong.prototype.movePaddle = function(e){
 		var evntObj = (document.all)?event.keyCode:e.keyCode;
-		//	var unicode = evntObj.charCode;
+		//var unicode = evntObj.charCode;
 		var actualKey = String.fromCharCode(evntObj);
-		//alert(evntObj + "\n" + actualKey);
-		
+		alert(evntObj + "\n" + actualKey);
+		this.printStuff(0, actualKey);
 		this.moveMyPaddle(actualKey);
-		
-		if(actualKey == "P"){
-			this.pieterMode = (this.pieterMode + 1) % 2;
-		}
+		alert("called moveMyPaddle");
+	};
+	Pong.prototype.printStuff = function(i, s){
+		alert(s);
 	};
 	
 	/**
@@ -79,6 +80,8 @@
 	 * @param {string} actualKey a string representing a keypress
 	 */
 	Pong.prototype.moveMyPaddle = function(actualKey){
+		alert("Doing key press stuff");
+		
 		if(this.WHAT_PADDLE_AM_I == 0){
 			if(actualKey == "W"){ //check which key was pressed
 				if(this.leftPad > 0){ // do nothing if it would move paddle out of frame
@@ -118,8 +121,9 @@
 		this.drawRect(0,this.leftPad,this.paddleWidth, this.paddleSize, this.WHITE);//xpos, ypos, width, height
 		this.drawRect(this.frameX-this.paddleWidth,this.rightPad,this.paddleWidth,this.paddleSize, this.WHITE);
 		
-		this.drawBall(this.xBall, this.yBall);
-		this.drawScore();
+		//this.drawBall(this.xBall, this.yBall);
+		//this.drawScore();
+		//alert("Finished drawing");
 	};
 	
 	/**
@@ -223,66 +227,20 @@
 		this.xBall+=this.dx;
 		this.yBall+=this.dy;
 	};
-	
-	//The "document.addEventListener" contains reactions to information sent by the server.   
-	document.addEventListener("DOMContentLoaded", function() {
-		var p = new Pong();
-		p.draw();
-		document.onkeydown = p.movePaddle; //call movePaddle whenever any key is pressed
-		//The DOMContentLoaded event happens when the parsing of the current page
-		//is complete. This means that it only tries to connect when it is done
-		//parsing.
-		  socket = io.connect("10.150.1.204:3000");
-		  /*socket.on("gameStart", function (data) {//expecting a full start of game state
-			  leftPad = data.paddle1;
-			  rightPad = data.paddle2;
-			  draw();
-		  });*/
-		  
-		  //Alerts the user when a new score is submitted
-		  socket.on("newScore", function(data){
-			 alert(data);
-		  });
-		  //Gets a reference to which paddle the user is 
-		  socket.on("paddleNum", function(data){
-			 WHAT_PADDLE_AM_I = data.paddleNum; 
-		  });
-		  //Receives the game state from the server and draws the screen
-		  socket.on("updateGame", function(data){//expecting arrays for paddle1, paddle2, ballPos
-			 leftPad = data.paddle[0];
-			 rightPad= data.paddle[1];
-			 draw();
-			 //draw(data.ballPos[0], data.ballPos[1]);
-		  });
-		  
-		  //Sends client data
-		  clientType();
-		  alert("I tried to do server stuff!");
-	});
-	
 	/**
-	 * Alert the server of our player type.
-	 */
-	function clientType(){
-		//alert("Sending client type");
-		//emit sends information to the server. The data sent is a generic object that has a type property set to player
-		socket.emit("clientType", {type: "player"});
+	* Informs the server that the paddle position has changed.
+	* @param position
+	*/
+	Pong.prototype.updatePaddle = function(position){
+		alert("update paddle");
+		this.socket.emit("updatePaddle", {pos: position});
 	};
-	
+
 	/**
-	 * Informs the server that the paddle position has changed.
-	 * @param position
-	 */
-	function updatePaddle(position){
-		//alert("update paddle");
-		socket.emit("updatePaddle", {pos: position});
-	};
-	
-	/**
-	 * Informs the server that a score has occured.
-	 */
-	function sendScore(){
-		socket.emit("score", {left: scoreLeft, right: scoreRight});
+	* Informs the server that a score has occured.
+	*/
+	Pong.prototype.sendScore = function(scoreLeft, scoreRight){
+		this.socket.emit("score", {left: scoreLeft, right: scoreRight});
 	};
 // Export to all scripts
 exports.Pong = Pong;
