@@ -28,10 +28,17 @@ var pieterMode = 0;
 
 //var media = new Media("pong2.wav");
 
+/**
+ * Start the pong game by grabbing the canvas.
+ */
 function initClient(){
 	context= document.getElementById("gameCanvas").getContext("2d");
 }
 
+/**
+ * Move the paddle as a response to input.
+ * @param e 
+ */
 function movePaddle(e){
 	var evntObj = (document.all)?event.keyCode:e.keyCode;
 	// var unicode = evntObj.charCode;
@@ -78,6 +85,9 @@ function moveMyPaddle(actualKey){
 	}
 }
 
+/**
+ * Draws the game state.
+ */
 function draw(){
 	context.clearRect(0,0, frameX,frameY); //clear the frame
 
@@ -92,6 +102,14 @@ function draw(){
 	drawBall(xBall, yBall);
 }
 
+/**
+ * Draws rectangles on the canvas.
+ * @param a top-left x-position
+ * @param b top-left y-position
+ * @param c bottom-right x-position
+ * @param d bottom-right y-position
+ * @param col color of the paddle
+ */
 function drawRect(a, b, c, d, col){
 	context.save();
 
@@ -104,7 +122,10 @@ function drawRect(a, b, c, d, col){
 	context.restore();
 }
 
-function drawBall(a, b){
+/**
+ * Draws the ball at given position.
+ */
+function drawBall(){
 	context.save();
 
 	ballPaddleLogic();
@@ -119,26 +140,27 @@ function drawBall(a, b){
 	context.restore();
 }
 
-function drawScore(pos){
-	//pos determines which side to draw score on, based on orientation either side of roughly midpoint
+/**
+ * Draws a score on the canvas. 
+ */
+function drawScore(){
 	context.fillStyle = "#00f";
 	context.font = "bold 50px sans-serif";
 	context.textBaseline = "top";
 
-
-	if(pos < 600){
-		var score;
-		score = String(scoreLeft);
-		context.fillText("Player 1: " + score, pos, 10);
-	}
-	if(pos > 600){
-		var score;
-		score = String(scoreRight);
-		context.fillText("Player 2: " + score, pos,10);
-	}
+	var score;
+	score = String(scoreLeft);
+	context.fillText("Player 1: " + score, frameX/4, 10);
+	
+	var score;
+	score = String(scoreRight);
+	context.fillText("Player 2: " + score, 3*frameX/4,10);
 
 }
 
+/**
+ * Runs logic for the paddle.  This determines bounces and scores.
+ */
 function ballPaddleLogic(){
 
 	//Ball bouncing logic
@@ -220,21 +242,25 @@ function clientType(){
 	socket.emit("clientType", {type: "player"});
 };
 
+/**
+ * Update our paddle position with the server.
+ * @param {position} the new position of the paddle
+ */
 function updatePaddle(position){
 //	alert("update paddle");
 	socket.emit("updatePaddle", {pos: position});
 };
 
+/**
+ * Sends a new score to the server.
+ */
 function sendScore(){
 	socket.emit("score", {left: scoreLeft, right: scoreRight});
 };
 
-function playPongSound(){
-	pongSound.play();
-};
-
-
-
+/**
+ * Asks the user for some login information.
+ */
 function promptLogin(){
 	name = prompt("Username please. (Use \"guest\" if you don't already have an account.");
 	pass = prompt("Please enter your password. (If you are logging in as \"guest\" then please use \"pass\".)");
