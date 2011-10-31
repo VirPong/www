@@ -5,8 +5,8 @@ var pass;
 var context;
 
 //Standard 100x100 game space.
-var gameX;
-var gameY;
+var gameX = 100;
+var gameY = 100;
 
 //Defining the screen modifiers.
 var screenModifierX;
@@ -28,7 +28,7 @@ var xBall = gameX/2;
 var yBall = gameY/2;
 
 //Size of the ball
-var ballR = gameX/6;
+var ballR = gameX/20;
 
 //Current score
 var scoreLeft = 0;
@@ -42,11 +42,10 @@ var WHAT_PADDLE_AM_I;
  * Start the pong game & grab the canvas so that we can modify it in JS.
  */
 function initClient(){
-	context=document.getElementByID("gameCanvas").getContext("2d");
+	context = gameCanvas.getContext("2d");
+	//alert("I initialized");
 	context.canvas.width = Math.floor(window.innerWidth*(0.9));
 	context.canvas.height = Math.floor(window.innerHeight*(0.9));
-
-
 	screenModifierX = context.canvas.width/100;
 	screenModifierY = context.canvas.height/100;
 };
@@ -80,9 +79,8 @@ function changePaddlePosition(actualKey) {
 			if(leftPad > 0){ // do nothing if it would move paddle out of frame
 				leftPad = leftPad - motionStep;
 			}
-		}
-		if(actualKey == "S"){
-			if(leftPad < (frameY - paddleHeight)){
+		}else if(actualKey == "S"){
+			if(leftPad < (gameY - paddleHeight)){
 				leftPad = leftPad + motionStep;
 			}
 		}updatePaddleToServer(leftPad);
@@ -92,7 +90,7 @@ function changePaddlePosition(actualKey) {
 				rightPad = rightPad - motionStep;
 			}
 		}if(actualKey == "S"){
-			if(rightPad < (frameY - paddleHeight)){
+			if(rightPad < (gameY - paddleHeight)){
 				rightPad = rightPad + motionStep;
 			}
 		}updatePaddleToServer(rightPad);
@@ -109,17 +107,18 @@ function changePaddlePosition(actualKey) {
  * Draws the game state.
  */
 function draw(){
-	alert("drawing");
+	//alert("drawing");
+	//alert(Math.floor(leftPad*screenModifierY)+"upper-left   bottom-right"+Math.floor(paddleWidth*screenModifierX));
 	context.clearRect(0,0, Math.floor(gameX*screenModifierX),Math.floor(gameY*screenModifierY)); //clear the frame
 
-	alert("clearRect");
+	//alert("clearRect");
 	drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), Math.floor(paddleHeight*screenModifierY), "rgb(0,200,0)");//xpos, ypos, width, height
-	alert("drawRect1");
+	//alert("drawRect1");
 	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
 			Math.floor(paddleHeight*screenModifierY), "rgb(255,0,0)");
-	alert("clearRect2");
+	//alert("clearRect2");
 	drawBall(xBall, yBall);
-	alert("drawn");
+	//alert("drawn");
 };
 
 /**
@@ -133,13 +132,11 @@ function draw(){
 function drawRect(a, b, c, d, col){
 	context.save();
 
-
 	context.beginPath();
 	context.fillStyle = col; //color to fill shape in with
 	context.rect(a,b,c,d); //draws rect with top left corner a,b
 	context.closePath();
 	context.fill();
-
 
 	context.restore();
 };
@@ -150,13 +147,10 @@ function drawRect(a, b, c, d, col){
 function drawBall(){
 	context.save();
 
-
 //	ballPaddleLogic();
-
 
 	context.beginPath();
 	context.fillStyle = "rgb(200,0,0)"; //color to fill shape in with
-
 
 	context.arc(xBall*screenModifierX,yBall*screenModifierY,ballR*screenModifierX,0,Math.PI*2,true);
 	context.closePath();
@@ -180,7 +174,6 @@ function drawScore(){
 	var score;
 	score = String(scoreRight);
 	context.fillText("Player 2: " + score, 3*gameX*screenModifierX/4,10);
-
 };
 //Listen for keypresses as input methods
 document.onkeydown = movePaddle;
@@ -208,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		WHAT_PADDLE_AM_I = data.paddleNum;
 	});
 	socket.on("updateGame", function(data){//expecting arrays for paddle1, paddle2, ballPos
-		alert("update game");
+		//alert("update game");
 		leftPad = data.paddle[0];
 		rightPad= data.paddle[1];
 		xBall = data.ball[0];
@@ -234,7 +227,7 @@ function clientType(){
  * @param {position} the new position of the paddle
  */
 function updatePaddleToServer(position){
-	alert("update paddle "+position);
+	//alert("update paddle "+position);
 	socket.emit("updatePaddle", {pos: position});
 };
 /**
