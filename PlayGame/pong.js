@@ -44,8 +44,8 @@ var WHAT_PADDLE_AM_I;
 function initClient(){
 	context = gameCanvas.getContext("2d");
 	//alert("I initialized");
-	context.canvas.width = Math.floor(window.innerWidth*(0.9));
-	context.canvas.height = Math.floor(window.innerHeight*(0.9));
+	context.canvas.width = window.innerWidth*(0.65);
+	context.canvas.height = window.innerHeight*(0.7);
 	screenModifierX = context.canvas.width/100;
 	screenModifierY = context.canvas.height/100;
 };
