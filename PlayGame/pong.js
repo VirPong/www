@@ -17,11 +17,11 @@ var rightPad = gameY/2;
 var leftPad = gameY/2;
 
 //Size of paddles.
-var paddleWidth = gameX/15;
+var paddleWidth = 10;
 var paddleHeight = gameY/5;
 
 //Step motion size.
-var motionStep = gameY/10;
+var motionStep = 10;
 
 //Ball position.
 var xBall = gameX/2;
@@ -44,10 +44,19 @@ var WHAT_PADDLE_AM_I;
 function initClient(){
 	context = gameCanvas.getContext("2d");
 	//alert("I initialized");
-	context.canvas.width = window.innerWidth*(0.65);
-	context.canvas.height = window.innerHeight*(0.7);
+	context.canvas.width = window.innerWidth*(0.9);
+	context.canvas.height = window.innerHeight*(0.9);
 	screenModifierX = context.canvas.width/100;
 	screenModifierY = context.canvas.height/100;
+	
+	var size = context.canvas.width;
+	size = Math.floor(size*.04+.92);
+	var font = String(size);
+	
+	context.fillStyle = "#00f";
+	var text = "bold "+size+"px sans-serif";
+	context.font = text;
+	context.textBaseline = "top";
 };
 
 
@@ -119,6 +128,7 @@ function draw(){
 	//alert("clearRect2");
 	drawBall(xBall, yBall);
 	//alert("drawn");
+	drawScore();
 };
 
 /**
@@ -163,17 +173,13 @@ function drawBall(){
  * Draws current score on the canvas. 
  */
 function drawScore(){
-	context.fillStyle = "#00f";
-	context.font = "bold 50px sans-serif";
-	context.textBaseline = "top";
-
 	var score;
 	score = String(scoreLeft);
-	context.fillText("Player 1: " + score, gameX*screenModifierX/4, 10);
+	context.fillText("Player 1: " + score, gameX*screenModifierX/5, 10);
 
 	var score;
 	score = String(scoreRight);
-	context.fillText("Player 2: " + score, 3*gameX*screenModifierX/4,10);
+	context.fillText("Player 2: " + score, 2.5*gameX*screenModifierX/4,10);
 };
 //Listen for keypresses as input methods
 document.onkeydown = movePaddle;
@@ -193,9 +199,9 @@ document.addEventListener("DOMContentLoaded", function() {
 	// is complete. This means that it only tries to connect when it"s done
 	// parsing.
 	socket = io.connect("10.150.1.204:3000");
-	alert("con");
+	//alert("con");
 	socket.on("paddleID", function(data){
-		WHAT_PADDLE_AM_I = data.playerNum;
+		WHAT_PADDLE_AM_I = data.paddleID;
 	});
 	socket.on("gameState", function(data){//expecting arrays for paddle1, paddle2, ballPos
 	    //alert("update game");
@@ -207,8 +213,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	    // draw(data.ballPos[0], data.ballPos[1]);
 	});
 	socket.on("scoreUpdate", function(data){
-            scoreLeft = data[0];
-            scoreRight = data[1];
+            scoreLeft = data.score[0];
+            scoreRight = data.score[1];
         });
 	//alert the server of our player status
 	sendClientType("player");
@@ -238,4 +244,5 @@ function updatePaddleToServer(position){
 function promptLogin(){
 	name = prompt("Username please. (Use \"guest\" if you don't already have an account.");
 	pass = prompt("Please enter your password. (If you are logging in as \"guest\" then please use \"pass\".)");
+	//clientType = prompt("")
 };
