@@ -193,33 +193,34 @@ document.addEventListener("DOMContentLoaded", function() {
 	// is complete. This means that it only tries to connect when it"s done
 	// parsing.
 	socket = io.connect("10.150.1.204:3000");
-	socket.on("sendScore", function(data){
-        scoreLeft = data[0];
-        scoreRight = data[1];
-    });
-	socket.on("paddleNum", function(data){
-		WHAT_PADDLE_AM_I = data.paddleNum;
+	alert("con");
+	socket.on("paddleID", function(data){
+		WHAT_PADDLE_AM_I = data.playerNum;
 	});
-	socket.on("updateGame", function(data){//expecting arrays for paddle1, paddle2, ballPos
-		//alert("update game");
-		leftPad = data.paddle[0];
-		rightPad= data.paddle[1];
-		xBall = data.ball[0];
-		yBall = data.ball[1];
-		draw();
-		// draw(data.ballPos[0], data.ballPos[1]);
+	socket.on("gameState", function(data){//expecting arrays for paddle1, paddle2, ballPos
+	    //alert("update game");
+	    leftPad = data.paddle[0];
+	    rightPad= data.paddle[1];
+	    xBall = data.ball[0];
+	    yBall = data.ball[1];
+	    draw();
+	    // draw(data.ballPos[0], data.ballPos[1]);
 	});
+	socket.on("scoreUpdate", function(data){
+            scoreLeft = data[0];
+            scoreRight = data[1];
+        });
 	//alert the server of our player status
-	clientType();
+	sendClientType("player");
 });
-
 
 /**
  * Alert the server of our player type.
+ * @param playType player or spectator
  */
-function clientType(){
+function sendClientType(playType){
 	// alert("Sending client type");
-	socket.emit("clientType", {type: "player"});
+	socket.emit("clientType", {type: playType});
 };
 
 /**
@@ -228,8 +229,9 @@ function clientType(){
  */
 function updatePaddleToServer(position){
 	//alert("update paddle "+position);
-	socket.emit("updatePaddle", {pos: position});
+	socket.emit("paddleUpdate", {pos: position});
 };
+
 /**
  * Asks the user for some login information and stores it for submission to the server.
  */
