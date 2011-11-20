@@ -197,37 +197,50 @@ document.onkeydown = movePaddle;
  * The 'document.addEventListener' contains reactions to information sent by the server.
  */
 document.addEventListener('DOMContentLoaded', function() {
-	// The DOMContentLoaded event happens when the parsing of the current page
-	// is complete. This means that it only tries to connect when it's done
-	// parsing.
-	socket = io.connect('10.150.1.204:3000');
-	//alert('con');
-	socket.on('paddleID', function(data){
-		paddleID = data.paddleID;
-	});
-	socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
-	    //alert('update game');
-	    leftPad = data.paddle[0];
-	    rightPad= data.paddle[1];
-	    xBall = data.ball[0];
-	    yBall = data.ball[1];
-	    draw();
-	    // draw(data.ballPos[0], data.ballPos[1]);
-	});
-	socket.on('scoreUpdate', function(data){
-            scoreLeft = data.score[0];
-            scoreRight = data.score[1];
-        });
-	//alert the server of our player status
-	sendClientType('player');
+    // The DOMContentLoaded event happens when the parsing of the current page
+    // is complete. This means that it only tries to connect when it's done
+    // parsing.
+    socket = io.connect('10.150.1.204:3000');
+    //alert('con');
+    socket.on('paddleID', function(data){
+	paddleID = data.paddleID;
+    });
+    socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
+	//alert('update game');
+	leftPad = data.paddle[0];
+	rightPad= data.paddle[1];
+	xBall = data.ball[0];
+	yBall = data.ball[1];
+	draw();
+	// draw(data.ballPos[0], data.ballPos[1]);
+    });
+    socket.on('scoreUpdate', function(data){
+        scoreLeft = data.score[0];
+        scoreRight = data.score[1];
+    });
+    socket.on('roomList', function(data){
+	for(i in data){
+	    data.rooms[]
+	}
+    });
+    //alert the server of our player status
+    sendClientType('player');
+    requestRooms();
 });
+
+/**
+ * Select the room to join.
+ */
+function joinRoom(room){
+    socket.emit('joinRoom', {room: room});
+};
 
 /**
  * Alert the server of our client type.
  * @param playType player or spectator
  */
 function sendClientType(playType){
-	socket.emit('clientType', {type: playType});
+    socket.emit('clientType', {type: playType});
 };
 
 /**
@@ -235,13 +248,19 @@ function sendClientType(playType){
  * @param {position} the new position of the paddle
  */
 function updatePaddleToServer(position){
-	socket.emit('paddleUpdate', {pos: position});
+    socket.emit('paddleUpdate', {pos: position});
 };
+
+
+
+
+
+
 
 /**
  * Asks the user for some login information and stores it for submission to the server.
  */
 function promptLogin(){
-	name = prompt("Username please. (Use \'guest\' if you don't already have an account.");
-	pass = prompt("Please enter your password. (If you are logging in as \'guest\' then please use \'pass\'.)");
+    name = prompt("Username please. (Use \'guest\' if you don't already have an account.");
+    pass = prompt("Please enter your password. (If you are logging in as \'guest\' then please use \'pass\'.)");
 };
