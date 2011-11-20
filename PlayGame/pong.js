@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of the current page
     // is complete. This means that it only tries to connect when it's done
     // parsing.
-    socket = io.connect('10.150.1.204:3000');
+    socket = io.connect('http://10.150.1.204:3000');
     //alert('con');
     socket.on('paddleID', function(data){
 	paddleID = data.paddleID;
@@ -219,21 +219,36 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreRight = data.score[1];
     });
     socket.on('roomList', function(data){
-	for(i in data){
-	    data.rooms[]
+	if(data.rooms.length == 0){
+	    roomName = prompt("You must create a game room.  What should the name be?");
+	    createRoom(roomName);
+	    return;
+	}
+	room = prompt("What room do you want?");
+	clientType =  confirm("Player?");
+	if(clientType){
+	    joinRoom(room, "player");
+	}else{
+	    joinRoom(room, "spectator");
 	}
     });
     //alert the server of our player status
     sendClientType('player');
-    requestRooms();
 });
 
 /**
  * Select the room to join.
  */
-function joinRoom(room){
-    socket.emit('joinRoom', {room: room});
+function joinRoom(room, clientType){
+    socket.emit('joinRoom', {name: room, name: clientType});
 };
+
+/**
+ * Tells the server to make a room for just me.
+*/
+function createRoom(roomName){
+    socket.emit('createRoom', {name: roomName});
+}
 
 /**
  * Alert the server of our client type.
@@ -250,12 +265,6 @@ function sendClientType(playType){
 function updatePaddleToServer(position){
     socket.emit('paddleUpdate', {pos: position});
 };
-
-
-
-
-
-
 
 /**
  * Asks the user for some login information and stores it for submission to the server.
