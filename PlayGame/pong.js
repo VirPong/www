@@ -218,8 +218,9 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreLeft = data.score[0];
         scoreRight = data.score[1];
     });
+
     socket.on('roomList', function(data){
-	if(data.rooms.length == 0){
+	if(data.numRooms == 0){
 	    roomName = prompt("You must create a game room.  What should the name be?");
 	    createRoom(roomName);
 	    return;
@@ -240,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
  * Select the room to join.
  */
 function joinRoom(room, clientType){
-    socket.emit('joinRoom', {name: room, name: clientType});
+    socket.emit('joinRoom', {name: room, clientType: clientType});
 };
 
 /**
