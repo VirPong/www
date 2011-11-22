@@ -21,7 +21,7 @@ var rightPad = gameY/2;
 var leftPad = gameY/2;
 
 //Size of paddles.
-var paddleWidth = 10;
+var paddleWidth = 3;
 var paddleHeight = gameY/5;
 
 //Step motion size.
@@ -48,17 +48,17 @@ var paddleID;
 function initClient(){
 	context = gameCanvas.getContext("2d");
 	//alert("I initialized");
-	context.canvas.width = window.innerWidth*(0.9);
-	context.canvas.height = window.innerHeight*(0.9);
+	context.canvas.width = window.innerWidth*(0.90);
+	context.canvas.height = window.innerHeight*(0.90);
 	screenModifierX = context.canvas.width/100;
 	screenModifierY = context.canvas.height/100;
-	
+    
 	var size = context.canvas.width;
 	size = Math.floor(size*.04+.92);
 	var font = String(size);
-	
-	context.fillStyle = "#00f";
-	var text = "bold "+size+"px sans-serif";
+    
+	context.fillStyle = "#ddd";
+	var text = size+"px Silkscreen-Expanded";
 	context.font = text;
 	context.textBaseline = "top";
 };
@@ -121,12 +121,14 @@ function changePaddlePosition(actualKey) {
  */
 function draw(){
 	context.clearRect(0,0, Math.floor(gameX*screenModifierX),Math.floor(gameY*screenModifierY)); //clear the frame
-
+    
+    drawRect((50*screenModifierX)-5, 0, 10, 100*screenModifierY, 'rgb(240,240,240)');
+    
 	drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), 
-		 Math.floor(paddleHeight*screenModifierY), 'rgb(0,200,0)');//xpos, ypos, width, height
-
+             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');//xpos, ypos, width, height
+    
 	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
-			Math.floor(paddleHeight*screenModifierY), 'rgb(255,0,0)');
+             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');
 	//alert('clearRect2');
 	drawBall(xBall, yBall);
 	//alert('drawn');
@@ -143,13 +145,13 @@ function draw(){
  */
 function drawRect(a, b, c, d, col){
 	context.save();
-
+    
 	context.beginPath();
 	context.fillStyle = col; //color to fill shape in with
 	context.rect(a,b,c,d); //draws rect with top left corner a,b
 	context.closePath();
 	context.fill();
-
+    
 	context.restore();
 };
 
@@ -157,16 +159,29 @@ function drawRect(a, b, c, d, col){
  * Draws the ball at current position.
  */
 function drawBall(){
-	context.save();
 
+    //Draw square "ball"
+    var tlX = (xBall*screenModifierX)-10;
+    var tlY = (yBall*screenModifierX)-10;
+    var brX = 20;
+    var brY = 20;
+    
+    drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
+    
+    /** OLD CIRCLE BALL
+     context.save();
+    
 	context.beginPath();
-	context.fillStyle = 'rgb(200,0,0)'; //color to fill shape in with
-
+	context.fillStyle = 'rgb(240,240,240)'; //color to fill shape in with
+    
 	context.arc(xBall*screenModifierX,yBall*screenModifierY,ballR*screenModifierX,0,Math.PI*2,true);
-	context.closePath();
+	
+    
+    context.closePath();
 	context.fill();
-
+    
 	context.restore();
+     **/
 };
 
 /**
@@ -175,11 +190,11 @@ function drawBall(){
 function drawScore(){
 	var score;
 	score = String(scoreLeft);
-	context.fillText('Player 1: ' + score, gameX*screenModifierX/5, 10);
-
+	context.fillText('P1: ' + score, gameX*screenModifierX/5, 10);
+    
 	var score;
 	score = String(scoreRight);
-	context.fillText('Player 2: ' + score, 2.5*gameX*screenModifierX/4,10);
+	context.fillText('P2: ' + score, 2.5*gameX*screenModifierX/4,10);
 };
 
 
@@ -197,30 +212,30 @@ document.onkeydown = movePaddle;
  * The 'document.addEventListener' contains reactions to information sent by the server.
  */
 document.addEventListener('DOMContentLoaded', function() {
-	// The DOMContentLoaded event happens when the parsing of the current page
-	// is complete. This means that it only tries to connect when it's done
-	// parsing.
-	socket = io.connect('10.150.1.204:3000');
-	//alert('con');
-	socket.on('paddleID', function(data){
-		paddleID = data.paddleID;
-	});
-	socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
-	    //alert('update game');
-	    leftPad = data.paddle[0];
-	    rightPad= data.paddle[1];
-	    xBall = data.ball[0];
-	    yBall = data.ball[1];
-	    draw();
-	    // draw(data.ballPos[0], data.ballPos[1]);
-	});
-	socket.on('scoreUpdate', function(data){
-            scoreLeft = data.score[0];
-            scoreRight = data.score[1];
-        });
-	//alert the server of our player status
-	sendClientType('player');
-});
+                          // The DOMContentLoaded event happens when the parsing of the current page
+                          // is complete. This means that it only tries to connect when it's done
+                          // parsing.
+                          socket = io.connect('10.150.1.204:3000');
+                          //alert('con');
+                          socket.on('paddleID', function(data){
+                                    paddleID = data.paddleID;
+                                    });
+                          socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
+                                    //alert('update game');
+                                    leftPad = data.paddle[0];
+                                    rightPad= data.paddle[1];
+                                    xBall = data.ball[0];
+                                    yBall = data.ball[1];
+                                    draw();
+                                    // draw(data.ballPos[0], data.ballPos[1]);
+                                    });
+                          socket.on('scoreUpdate', function(data){
+                                    scoreLeft = data.score[0];
+                                    scoreRight = data.score[1];
+                                    });
+                          //alert the server of our player status
+                          sendClientType('player');
+                          });
 
 /**
  * Alert the server of our client type.
@@ -242,6 +257,6 @@ function updatePaddleToServer(position){
  * Asks the user for some login information and stores it for submission to the server.
  */
 function promptLogin(){
-	name = prompt("Username please. (Use \'guest\' if you don't already have an account.");
-	pass = prompt("Please enter your password. (If you are logging in as \'guest\' then please use \'pass\'.)");
+    //name = prompt("Username please. (Use \'guest\' if you don't already have an account.");
+	//pass = prompt("Please enter your password. (If you are logging in as \'guest\' then please use \'pass\'.)");
 };

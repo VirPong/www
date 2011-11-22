@@ -1,5 +1,132 @@
 body {
     
-    border: 1px solid #393939;
+    padding: 0px;
+    background-color: #0F336E;
+    color: #333333;
+    font-family: Calibri, Candara, Trebuchet MS, sans-serif;
     
+}
+
+div#mainWrapper {
+    
+    margin-top: 5%;
+    margin-bottom: 5%;
+    padding: 5%;
+    padding-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    text-align: center;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3E3E3), to(#BBBBBB));
+    background-color: #DDDDDD;
+    -webkit-border-radius: 14px;
+    
+}
+
+div#logo {
+    
+    width: 213px;
+    height: 161px;
+    margin-left: auto;
+    margin-right: auto;
+    background-image: url('../graphics/virPongLogo.png');
+    
+}
+
+a.button {
+        
+    margin: 5%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-decoration: none;
+    -webkit-border-radius: 8px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#122FB3), to(#212D61));
+    padding: 10px;
+    color: white;
+    text-shadow: 2px 2px 2px #333;
+    
+}
+
+span#footerMeta {
+    
+    font-size: 8px;
+    
+}
+
+div#topBar {
+    
+    height: 40px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#7A7A7A), to(#303030));
+    margin-bottom: 30px;
+    
+}
+
+a.topBarButton {
+    
+    display: block;
+    height: 20px;
+    width: 80px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#000000));
+    -webkit-border-radius: 3px;
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-top: 5px;
+    
+}
+
+form#pinEntry {
+    
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+input#userName {
+    
+    width: 160px;
+    height: 40px;
+    text-align: center;
+    
+    margin-right: auto;
+    margin-left auto;
+    margin-bottom: 20px;
+    
+    font-size: 30px;
+    
+}
+
+input#userPIN { 
+
+    width: 160px;
+    height: 40px;
+    text-align: center;
+    
+    margin-right: auto;
+    margin-left auto;
+    margin-bottom: auto;
+    
+    font-size: 30px;
+
+}
+
+input#logIn {
+
+    margin-top: 20px;
+    width: 160px;
+    height: 50px;
+
 }
