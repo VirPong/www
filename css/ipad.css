@@ -1,9 +1,15 @@
+/*
+ * iPad has a special 
+ */
 body {
     
     background: url('../graphics/iPadBackground.png');
     
 }
 
+/*
+ * Make buttons extra wide and their text extra big on iPad.
+ */
 a.button {
     
     width: 300px;
@@ -11,6 +17,9 @@ a.button {
     
 }
 
+/*
+ * Make the main wrapper a little lower off the top of the screen on the iPad.
+ */
 div#mainWrapper {
     
     margin-top: 10%;
