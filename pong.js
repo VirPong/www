@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           // is complete. This means that it only tries to connect when it's done
                           // parsing.
                           alert('preCon');
-                          socket = io.connect('10.150.1.204:3000');
+                          socket = io.connect("10.150.1.204:3000");
                           alert('postCon');
                           
                           performAuthentication();
@@ -237,6 +237,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     scoreLeft = data.score[0];
                                     scoreRight = data.score[1];
                                     });
+                          
+                          socket.on('roomList', function(data){
+                                    alert('received Room List');
+                                    });
+    
                           //alert the server of our player status
                           sendClientType('player');
                           });

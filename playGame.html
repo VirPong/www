@@ -8,8 +8,8 @@
         <link rel="stylesheet" href="css/gameplay.css" type="text/css" /> 
         
         <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+        <script type="text/javascript" charset="utf-8" src="http://10.150.1.204:3000/socket.io/socket.io.js"></script>
         <script type="text/javascript" charset="utf-8" src="pong.js"></script>
-        <script src="http://10.150.1.204:3000/socket.io/socket.io.js"></script>
         
         <script type="text/javascript">
             
@@ -63,11 +63,11 @@
             
         <title>VirPong Gameplay</title>
     </head>
-        <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
+        <body onload="onBodyLoad();"> <!-- When body element loads, call "onBodyLoad()" -->
             
             <canvas id="gameCanvas" height="100" width="100">
             </canvas>
-            <a href='#' style="font-family: 'Silkscreen-Expanded'" onClick="draw();">DRAW</a>
+            <!--<a href='#' style="font-family: 'Silkscreen-Expanded'" onClick="draw();" style="display: none;">DRAW</a>-->
             <a href="#" onClick="changePaddlePosition('W');">Up</a>
             <a href="#" onClick="changePaddlePosition('S');">Down</a>
             <a href="index.html">Return to Main Menu</a>
