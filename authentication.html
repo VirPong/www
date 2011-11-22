@@ -51,7 +51,44 @@
                  for more details -jm */
                 function onDeviceReady()
                 {
-                    // Do device ready things.
+                    
+                    var localStorage = window.localStorage;
+                    prepareForm();
+                    
+                }
+                
+                function prepareForm() {
+                    
+                    var gotUsername = localStorage.getItem("username");
+                    var gotPIN = localStorage.getItem("pin");
+                    
+                    if(gotUsername==null) { 
+                        
+                        gotUsername = "guest"; 
+                        gotPIN = "0000"; 
+                    
+                    } else {
+                        
+                        window.location = "playGame.html";
+                        
+                    }
+                    
+                    document.pinEntry.userName.value = gotUsername;
+                    document.pinEntry.userPIN.value = gotPIN;
+                    
+                }
+                
+                function handleForm() {
+                    
+                    var username = document.pinEntry.userName.value;
+                    var pin = document.pinEntry.userPIN.value;
+                    
+                    localStorage.setItem("username", username);
+                    localStorage.setItem("pin", pin);
+                    
+                    window.location = "playGame.html";
+                    
+                    
                 }
                 
                 </script>
@@ -60,20 +97,23 @@
         <div id="topBar">
             <a class="topBarButton" href="index.html">Main Menu</a>
         </div>
-        <div id="mainWrapper">
+        <div id="mainWrapper" style="margin-top: 10%;">
             
             <div id="logo"></div>
             
             <br />
             
-            <form name="pinEntry" action="" method="POST" id="pinEntry">
-                <input type="text" value="guest" name="userName" id="userName" /><br />
-                <input type="password" value="0000" name="userPIN" id="userPIN" /><br />
-                <input type="submit" value="Log In" id="logIn" />
+            
+            <!-- TODO: form handling: store U/N and P/W -->
+            <form name="pinEntry" id="pinEntry">
+                <input type="text" value="" name="userName" id="userName" onFocus="this.value=''" autocapitalize="off" autocorrect="off" /><br />
+                <input type="password" value="" name="userPIN" id="userPIN" onFocus="this.value=''" autocapitalize="off" autocorrect="off" /><br />
+                <input type="button" onClick="handleForm()" value="Log In" id="logIn" />
             </form>
             
             <br />
             <a href="playGame.html">SKIP IT</a>
+            <a href="javascript:localStorage.clear();window.location.reload();">CLEAR LOCAL STORAGE</a>
             
                 <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
                 

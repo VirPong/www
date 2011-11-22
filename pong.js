@@ -215,8 +215,12 @@ document.addEventListener('DOMContentLoaded', function() {
                           // The DOMContentLoaded event happens when the parsing of the current page
                           // is complete. This means that it only tries to connect when it's done
                           // parsing.
+                          alert('preCon');
                           socket = io.connect('10.150.1.204:3000');
-                          //alert('con');
+                          alert('postCon');
+                          
+                          performAuthentication();
+                          
                           socket.on('paddleID', function(data){
                                     paddleID = data.paddleID;
                                     });
@@ -256,7 +260,13 @@ function updatePaddleToServer(position){
 /**
  * Asks the user for some login information and stores it for submission to the server.
  */
-function promptLogin(){
-    //name = prompt("Username please. (Use \'guest\' if you don't already have an account.");
-	//pass = prompt("Please enter your password. (If you are logging in as \'guest\' then please use \'pass\'.)");
+function performAuthentication(){
+    
+    var username = localStorage.getItem("username");
+    var pin = localStorage.getItem("pin");
+    
+    /*var data = username + "|" + pin;
+    
+    socket.emit('userAuth', {authData: data});
+    */
 };

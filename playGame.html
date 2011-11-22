@@ -22,6 +22,7 @@
             { 
                 e.preventDefault(); 
             };
+            
             document.addEventListener("touchmove", preventBehavior, false);
             
             /*
@@ -42,6 +43,7 @@
             function onBodyLoad()
             {		
                 document.addEventListener("deviceready", onDeviceReady, false);
+                initClient();
             }
             
             /* When this function is called, PhoneGap has been initialized and is ready to roll */
@@ -50,9 +52,11 @@
              for more details -jm */
             function onDeviceReady()
             {
+                
+                var localStorage = window.localStorage;
+                
                 // Do device ready things.
-                promptLogin();
-                initClient();
+                
             }
             
             </script>
@@ -66,5 +70,6 @@
             <a href='#' style="font-family: 'Silkscreen-Expanded'" onClick="draw();">DRAW</a>
             <a href="#" onClick="changePaddlePosition('W');">Up</a>
             <a href="#" onClick="changePaddlePosition('S');">Down</a>
+            <a href="index.html">Return to Main Menu</a>
         </body>
                     </html>
