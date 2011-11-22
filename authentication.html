@@ -1,122 +1,137 @@
 <!DOCTYPE html>
+
 <html>
+
     <head>
-        <title></title>
+    
+        <!-- Title, so we can keep track of what page this is, even if PhoneGap doesn't display it. -->
+        <title>VirPong Mobile Client: Authentication Prompt</title>
         
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
-        <meta charset="utf-8">
+        <!-- Defining the size of the viewport. This is useful for -->
+        <!-- mobile devices for the sake of scaling and disabling resizing. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" charset="utf-8" />
+        
+        <!-- Defining our main styles. "main.css" is basic stuff, -->
+        <!-- and the two others provide sizing relativity for the iPad -->
+        <!-- and Android respectively. -->
+        <link rel="stylesheet" href="css/main.css" type="text/css" />
+        <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+        
+        <!-- Include PhoneGap! -->
+        <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+        
+        <!-- Some basic JS for this document. -->
+        <script type="text/javascript">
+            
+            /*
+             * This function takes an event and disables the default behavior.
+             * @param   event   e   The event we're preventing the behavior of.
+             */
+            function preventBehavior(e)
+            { 
+                e.preventDefault(); 
+            }
             
             
-            <link rel="stylesheet" href="css/main.css" type="text/css" />
-            <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
-            <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+            /* 
+             * When the body element loads, create an event listener
+             * to fire off function "onDeviceReady" when the device
+             * reports ready.
+             */
+            function onBodyLoad()
+            {		
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+
             
-            <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
-            <script type="text/javascript">
+            /* 
+             * This gets fired off when the device reports ready.
+             */
+            function onDeviceReady()
+            {
+                // Reference the device's local store in "localStorage"
+                var localStorage = window.localStorage;
                 
+                // Prepare the Form.
+                prepareForm();
+            }
+            
+            /*
+             * Check the localStorage to see if there is a stored
+             * username and PIN. If so, forward to playGame, where
+             * actual authentication is handled. If not, autofill
+             * guest login information, and display autofilled form.
+             */
+            function prepareForm()
+            {
+                // If there is a stored username, forward to playGame.
+                if(localStorage.getItem("username")!=null) { window.location = "playGame.html"; }
                 
-                /*
-                 * This function and related event listener prevent the user from
-                 * scrolling the "Web View" that our App is based in.
-                 */
-                function preventBehavior(e) 
-                { 
-                    e.preventDefault(); 
-                };
-                document.addEventListener("touchmove", preventBehavior, false);
+                // Set the form data to guest login data.
+                document.pinEntry.userName.value = "guest";
+                document.pinEntry.userPIN.value = "0000";
+            }
+            
+            /*
+             * Use local storage to store username/pin for the playGame
+             * page (where authentication actually takes place in the socket
+             * connection. Once data is stored, move on to playGame.
+             */
+            function handleForm()
+            {
+                // Store the data from the input elements in the localStorage K/V pairs.
+                localStorage.setItem("username", document.pinEntry.userName.value);
+                localStorage.setItem("pin", document.pinEntry.userPIN.value);
                 
-                /*
-                 * Handling a URL from another app. TODO.
-                 *
-                 function handleOpenURL(url)
-                 {
-                 // TODO: do something with the url passed in.
-                 }
-                 */
-                
-                
-                /* 
-                 * When the body element loads, create an event listener
-                 * to fire off function "onDeviceReady" when the device
-                 * reports ready.
-                 */
-                function onBodyLoad()
-                {		
-                    document.addEventListener("deviceready", onDeviceReady, false);
-                }
-                
-                /* When this function is called, PhoneGap has been initialized and is ready to roll */
-                /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-                 see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-                 for more details -jm */
-                function onDeviceReady()
-                {
-                    
-                    var localStorage = window.localStorage;
-                    prepareForm();
-                    
-                }
-                
-                function prepareForm() {
-                    
-                    var gotUsername = localStorage.getItem("username");
-                    var gotPIN = localStorage.getItem("pin");
-                    
-                    if(gotUsername==null) { 
-                        
-                        gotUsername = "guest"; 
-                        gotPIN = "0000"; 
-                    
-                    } else {
-                        
-                        window.location = "playGame.html";
-                        
-                    }
-                    
-                    document.pinEntry.userName.value = gotUsername;
-                    document.pinEntry.userPIN.value = gotPIN;
-                    
-                }
-                
-                function handleForm() {
-                    
-                    var username = document.pinEntry.userName.value;
-                    var pin = document.pinEntry.userPIN.value;
-                    
-                    localStorage.setItem("username", username);
-                    localStorage.setItem("pin", pin);
-                    
-                    window.location = "playGame.html";
-                    
-                    
-                }
-                
-                </script>
-            </head>
+                // Move on to playGame.
+                window.location = "playGame.html";
+            }
+            
+        </script>
+        
+    </head>
+    
     <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
+        
+        <!-- Our nice little menu at the top, with a link back to the main menu. -->
         <div id="topBar">
-            <a class="topBarButton" href="index.html">Main Menu</a>
-        </div>
-        <div id="mainWrapper" style="margin-top: 10%;">
             
+            <a class="topBarButton" href="index.html">Main Menu</a>
+        
+        </div>
+       
+        <!-- Main page wrapper -->
+        <div id="mainWrapper">
+            
+            <!-- Display logo -->
             <div id="logo"></div>
             
             <br />
             
-            
-            <!-- TODO: form handling: store U/N and P/W -->
+            <!-- Displyay pinEntry form. -->
             <form name="pinEntry" id="pinEntry">
+                
+                <!-- Username -->
                 <input type="text" value="" name="userName" id="userName" onFocus="this.value=''" autocapitalize="off" autocorrect="off" /><br />
+                
+                <!-- PIN -->
                 <input type="password" value="" name="userPIN" id="userPIN" onFocus="this.value=''" autocapitalize="off" autocorrect="off" /><br />
+                
+                <!-- Submit -->
                 <input type="button" onClick="handleForm()" value="Log In" id="logIn" />
+                
             </form>
             
             <br />
-            <a href="playGame.html">SKIP IT</a>
+            
+            <!-- For debugging purposes, to clear any locally-stored logins.--> 
+            <!-- This will be moved to settings as an actual UI element eventually.-->
             <a href="javascript:localStorage.clear();window.location.reload();">CLEAR LOCAL STORAGE</a>
             
-                <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
+            <!-- Display footer. -->
+            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
                 
-                </div>
-                </body>
-                </html>
+        </div>
+    </body>
+</html>
