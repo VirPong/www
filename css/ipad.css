@@ -1,0 +1,12 @@
+body {
+    
+    background: url('../graphics/iPadBackground.png');
+    
+}
+
+a.button {
+    
+    width: 300px;
+    font-size: 30px;
+    
+}

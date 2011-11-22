@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+        <meta charset="utf-8">
+            
+            
+            <link rel="stylesheet" href="css/main.css" type="text/css" />
+            <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
+            <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+            
+            <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+            <script type="text/javascript">
+                
+                
+                // If you want to prevent dragging, uncomment this section
+                /*
+                 function preventBehavior(e) 
+                 { 
+                 e.preventDefault(); 
+                 };
+                 document.addEventListener("touchmove", preventBehavior, false);
+                 */
+                
+                /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+                 see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+                 for more details -jm */
+                /*
+                 function handleOpenURL(url)
+                 {
+                 // TODO: do something with the url passed in.
+                 }
+                 */
+                
+                function onBodyLoad()
+                {		
+                    document.addEventListener("deviceready", onDeviceReady, false);
+                }
+                
+                var watchID = null;
+                
+                /* When this function is called, PhoneGap has been initialized and is ready to roll */
+                /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+                 see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+                 for more details -jm */
+                function onDeviceReady()
+                {
+                    var options = { frequency: 50 };
+                    var watchID = navigator.accelerometer.watchAcceleration(onSuccess,
+                                                                            onError,
+                                                                            options);
+    
+                }
+                
+                
+                function onSuccess(acceleration) { 
+                        var theText =   'AccelX: ' + (acceleration.x) + '<br />' +
+                                        'AccelY: ' + (acceleration.y) + '<br />' +
+                                        'AccelZ: ' + (acceleration.z) + '<br />' +
+                                        'Time:   ' + acceleration.timestamp + '<br /><br /><br /><br />Position: ' + getPosition(acceleration);
+                        
+                        var paddlePosition = Math.round(getPosition(acceleration));
+                            paddlePosition = paddlePosition * 4;
+                            paddlePosition = paddlePosition + "px";
+                    
+                    
+                    document.getElementById("accelData").innerHTML = theText;
+                        
+                    document.getElementById("thePaddle").style.left = paddlePosition;
+                    
+                    }
+                
+                function onError(acceleration) {
+                    
+                    alert('Error!');
+                    
+                }
+                
+                var currentAcceleration = 0;
+                var currentVelocity = 0;
+                var currentPosition = 50;
+                
+                var previousAcceleration = 0;
+                var previousVelocity = 0;
+                var previousPosition = 0;
+                
+                var TIME = .3;
+                
+                var firstQuery;
+                
+                function getPosition(acceleration) {
+                    
+                    currentAcceleration = -1*acceleration.y;
+                    
+                    var averageAcceleration = 2*currentAcceleration;
+                    
+                    if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
+                        
+                        averageAcceleration = averageAcceleration * 4;
+                        
+                    }
+                    
+                   
+                    currentVelocity = (currentVelocity) + ((TIME * averageAcceleration));
+                    var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
+                    
+                    currentPosition = currentPosition + (TIME * averageVelocity);
+                    previousPosition = currentPosition;
+                    
+                    previousVelocity = currentVelocity;
+                    previousAcceleration = currentAcceleration;
+                    
+                    if(currentPosition>100) { currentPosition = 100; }
+                    if(currentPosition<0) { currentPosition = 0; }
+                    
+                    if(currentPosition==0||currentPosition==100) { previousVelocity = 0; previousAcceleration = 0; currentVelocity = 0; currentAcceleration = 0; }
+                    
+                    return currentPosition;
+                    
+                }
+                
+                function makeSound() {
+                    
+                    var testSound = new Media('test.wav');
+                    testSound.play();
+                    
+                }
+                
+                </script>
+            </head>
+    <body onload="onBodyLoad()">
+        <div id="topBar">
+            <a class="topBarButton" href="index.html">Main Menu</a>
+        </div>
+        <div id="mainWrapper">
+            <div id="logo"></div>
+            <br />
+            <div style="width: 70%; margin-right: auto; margin-left: auto; background-color: white; color: black;" id="accelData"> </div>
+            <br /><br />
+            <a href="javascript:makeSound()">CLICK HERE TO TEST SOUND</a>
+            <br /><br /><br />
+            <div style="width: 400px; height: 20px; background-color: white;"><div id="thePaddle" style="width: 60px; margin-left: -15px; position: relative; left: 100px; background-color: #000000;"> jkl</div></div>
+            
+            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserved.</span>
+        </div>
+    </body>
+</html>

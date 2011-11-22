@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+        <meta charset="utf-8">
+            
+            
+            <link rel="stylesheet" href="css/main.css" type="text/css" />
+            <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
+            <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+            
+            <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+            <script type="text/javascript">
+                
+                
+                /*
+                 * This function and related event listener prevent the user from
+                 * scrolling the "Web View" that our App is based in.
+                 */
+                function preventBehavior(e) 
+                { 
+                    e.preventDefault(); 
+                };
+                document.addEventListener("touchmove", preventBehavior, false);
+                
+                /*
+                 * Handling a URL from another app. TODO.
+                 *
+                 function handleOpenURL(url)
+                 {
+                 // TODO: do something with the url passed in.
+                 }
+                 */
+                
+                
+                /* 
+                 * When the body element loads, create an event listener
+                 * to fire off function "onDeviceReady" when the device
+                 * reports ready.
+                 */
+                function onBodyLoad()
+                {		
+                    document.addEventListener("deviceready", onDeviceReady, false);
+                }
+                
+                /* When this function is called, PhoneGap has been initialized and is ready to roll */
+                /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+                 see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+                 for more details -jm */
+                function onDeviceReady()
+                {
+                    // Do device ready things.
+                }
+                
+                </script>
+            </head>
+    <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
+        <div id="topBar">
+            <a class="topBarButton" href="index.html">Main Menu</a>
+        </div>
+        <div id="mainWrapper">
+            
+            <div id="logo"></div>
+            
+            <br />
+            
+            <form name="pinEntry" action="" method="POST" id="pinEntry">
+                <input type="text" value="guest" name="userName" id="userName" /><br />
+                <input type="password" value="0000" name="userPIN" id="userPIN" /><br />
+                <input type="submit" value="Log In" id="logIn" />
+            </form>
+            
+            <br />
+            <a href="playGame.html">SKIP IT</a>
+            
+                <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
+                
+                </div>
+                </body>
+                </html>
