@@ -1,3 +1,12 @@
+/*
+ * Style the game canvas.
+ *  - Pad 10px all around for a little bit of space.
+ *  - Move the canvas 20px down.
+ *  - Center the element.
+ *  - Background is black.
+ *  - Make a block element so we can position it well.
+ *  - Round the corners (just barely!)
+ */
 canvas#gameCanvas {
     
     padding: 10px;
@@ -10,6 +19,9 @@ canvas#gameCanvas {
     
 }
 
+/*
+ * Define a font face and load the TTF.
+ */
 @font-face {
     
     font-family: 'Silkscreen-Expanded';

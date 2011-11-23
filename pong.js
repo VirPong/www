@@ -116,24 +116,48 @@ function changePaddlePosition(actualKey) {
 //===============================================================================================
 //===============================================================================================
 
+
 /**
  * Draws the game state.
  */
 function draw(){
 	context.clearRect(0,0, Math.floor(gameX*screenModifierX),Math.floor(gameY*screenModifierY)); //clear the frame
     
-    drawRect((50*screenModifierX)-5, 0, 10, 100*screenModifierY, 'rgb(240,240,240)');
-    
-	drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), 
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');//xpos, ypos, width, height
-    
-	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');
+    drawPaddles();
 	//alert('clearRect2');
 	drawBall(xBall, yBall);
 	//alert('drawn');
 	drawScore();
+    drawHalfCourt();
 };
+
+
+/*
+ * Draw the half court line.
+ */
+function drawHalfCourt() {
+    
+    var width = 3;
+    var height = 3;
+    var topY = 1.5*height;
+    while(topY < gameY*screenModifierY - 1.5*height) {
+        
+        drawRect(gameX*screenModifierX/2 - .5*width, topY, width, height, 'rgb(240,240,240)');
+        topY = topY + 2*height;
+        
+    }
+    
+}
+
+function drawPaddles() {
+    
+    drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), 
+             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');//xpos, ypos, width, height
+    
+	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
+             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');
+    
+}
 
 /**
  * Draws rectangles on the canvas.
@@ -215,8 +239,12 @@ document.addEventListener('DOMContentLoaded', function() {
                           // The DOMContentLoaded event happens when the parsing of the current page
                           // is complete. This means that it only tries to connect when it's done
                           // parsing.
-                          socket = io.connect('10.150.1.204:3000');
-                          //alert('con');
+                          alert('preCon');
+                          socket = io.connect("10.150.1.204:3000");
+                          alert('postCon');
+                          
+                          performAuthentication();
+                          
                           socket.on('paddleID', function(data){
                                     paddleID = data.paddleID;
                                     });
@@ -233,6 +261,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     scoreLeft = data.score[0];
                                     scoreRight = data.score[1];
                                     });
+                          
+                          socket.on('roomList', function(data){
+                                    alert('received Room List');
+                                    });
+    
                           //alert the server of our player status
                           sendClientType('player');
                           });
@@ -256,7 +289,13 @@ function updatePaddleToServer(position){
 /**
  * Asks the user for some login information and stores it for submission to the server.
  */
-function promptLogin(){
-    //name = prompt("Username please. (Use \'guest\' if you don't already have an account.");
-	//pass = prompt("Please enter your password. (If you are logging in as \'guest\' then please use \'pass\'.)");
+function performAuthentication(){
+    
+    var username = localStorage.getItem("username");
+    var pin = localStorage.getItem("pin");
+    
+    /*var data = username + "|" + pin;
+    
+    socket.emit('userAuth', {authData: data});
+    */
 };
