@@ -28,7 +28,7 @@ var paddleHeight = gameY/5;
 var motionStep = 10;
 
 //Ball position.
-var xBall = gameX/2;
+var xBall = (gameX/2)+10;
 var yBall = gameY/2;
 
 //Size of the ball
@@ -49,7 +49,7 @@ function initClient(){
 	context = gameCanvas.getContext("2d");
 	//alert("I initialized");
 	context.canvas.width = window.innerWidth*(0.90);
-	context.canvas.height = window.innerHeight*(0.90);
+	context.canvas.height = window.innerHeight*(0.70);
 	screenModifierX = context.canvas.width/100;
 	screenModifierY = context.canvas.height/100;
     
@@ -58,7 +58,7 @@ function initClient(){
 	var font = String(size);
     
 	context.fillStyle = "#ddd";
-	var text = size+"px Silkscreen-Expanded";
+	var text = size+"px sans-serf";
 	context.font = text;
 	context.textBaseline = "top";
 };
@@ -125,7 +125,7 @@ function draw(){
     
     drawPaddles();
 	//alert('clearRect2');
-	drawBall(xBall, yBall);
+	drawBall();
 	//alert('drawn');
 	drawScore();
     drawHalfCourt();
@@ -185,27 +185,20 @@ function drawRect(a, b, c, d, col){
 function drawBall(){
 
     //Draw square "ball"
-    var tlX = (xBall*screenModifierX)-10;
-    var tlY = (yBall*screenModifierX)-10;
-    var brX = 20;
-    var brY = 20;
-    
-    drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
-    
-    /** OLD CIRCLE BALL
-     context.save();
-    
-	context.beginPath();
-	context.fillStyle = 'rgb(240,240,240)'; //color to fill shape in with
-    
-	context.arc(xBall*screenModifierX,yBall*screenModifierY,ballR*screenModifierX,0,Math.PI*2,true);
-	
-    
-    context.closePath();
-	context.fill();
-    
-	context.restore();
-     **/
+    //context.save();
+    //var tlX = (xBall*screenModifierX)-10;
+    //var tlY = (yBall*screenModifierY)-10;
+    //var brX = 20;
+    //var brY = 20;
+    //drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
+  	//context.restore();
+  	
+    var ballMod = screenModifierX;
+	if(screenModifierX > 8){
+		ballMod = 8;
+	};
+	drawRect(xBall*screenModifierX - .5*ballR*ballMod, yBall*screenModifierY - .5*ballR*screenModifierY, 2*ballR*ballMod, 
+	2*ballR*ballMod, 'rgb(255,255,255)');
 };
 
 /**
