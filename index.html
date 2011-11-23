@@ -1,75 +1,83 @@
 <!DOCTYPE html>
+
 <html>
-  <head>
-  <title></title>
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
-	<meta charset="utf-8">
 
+    <head>
+        
+        <!-- Title, so we can keep track of what page this is, even if PhoneGap doesn't display it. -->
+        <title>VirPong Mobile Client</title>
+        
+        <!-- Defining the size of the viewport. This is useful for -->
+        <!-- mobile devices for the sake of scaling and disabling resizing. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" charset="utf-8" />
 
-    <link rel="stylesheet" href="css/main.css" type="text/css" />
-	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
-	<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+        <!-- Defining our main styles. "main.css" is basic stuff, -->
+        <!-- and the two others provide sizing relativity for the iPad -->
+        <!-- and Android respectively. -->
+        <link rel="stylesheet" href="css/main.css" type="text/css" />
+        <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
 
-    <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
-    <script type="text/javascript">
-
-
-	/*
-     * This function and related event listener prevent the user from
-     * scrolling the "Web View" that our App is based in.
-     */
-    function preventBehavior(e) 
-	{ 
-      e.preventDefault(); 
-    };
-	document.addEventListener("touchmove", preventBehavior, false);
-	
-	/*
-     * Handling a URL from another app. TODO.
-     *
-	function handleOpenURL(url)
-	{
-		// TODO: do something with the url passed in.
-	}
-	*/
+        <!-- Include PhoneGap! -->
+        <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
         
-	
-    /* 
-     * When the body element loads, create an event listener
-     * to fire off function "onDeviceReady" when the device
-     * reports ready.
-     */
-	function onBodyLoad()
-	{		
-		document.addEventListener("deviceready", onDeviceReady, false);
-	}
-	
-	/* When this function is called, PhoneGap has been initialized and is ready to roll */
-	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-	for more details -jm */
-	function onDeviceReady()
-	{
-        // Do device ready things.
-	}
-    
-    </script>
-  </head>
-  <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
-	<div id="mainWrapper">
-        
-        <div id="logo"></div>
-        
-        <br />
-        
-        <a class="button" href="authentication.html">Log In & Play</a>
-        <a class="button" href="registration.html">Register</a>
-        <a class="button" href="accelTest.html">Native Accel. Data</a>
-        <a class="button" href="settings.html">Settings</a>
-        
-        <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
+        <!-- Some basic JS for this document. -->
+        <script type="text/javascript">
             
-    </div>
-  </body>
+            /*
+             * This function takes an event and disables the default behavior.
+             * @param   event   e   The event we're preventing the behavior of.
+             */
+            function preventBehavior(e)
+            { 
+                e.preventDefault(); 
+            }
+            
+            
+            /* 
+             * When the body element loads, create an event listener
+             * to fire off function "onDeviceReady" when the device
+             * reports ready.
+             */
+            function onBodyLoad()
+            {		
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+            
+            /* 
+             * This gets fired off when the device reports ready.
+             */
+            function onDeviceReady()
+            {
+                
+                // When the device is ready, disable scrolling by touch.
+                document.addEventListener("touchmove", preventBehavior, false);
+            
+            }
+        
+        </script>
+        
+    </head>
+    
+    <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
+    
+        <!-- Main page wrapper. -->
+        <div id="mainWrapper">
+            
+            <!-- Display logo. -->
+            <div id="logo"></div>
+            
+            <br />
+            
+            <!-- Our big blue buttons! -->
+            <a class="button" href="authentication.html">Log In & Play</a>
+            <a class="button" href="registration.html">Register</a>
+            <a class="button" href="accelTest.html">Native Accel. Data</a>
+            <a class="button" href="settings.html">Settings</a>
+            
+            <!-- Small footer text. -->
+            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
+                
+        </div>
+    </body>
 </html>
