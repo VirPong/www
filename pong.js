@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of the current page
     // is complete. This means that it only tries to connect when it's done
     // parsing.
-    socket = io.connect("10.150.1.204:3000");
+   socket = io.connect("10.150.1.204:3000");
     
     performAuthentication();
     socket.on('paddleID', function(data){
@@ -255,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
        start a new one
        */
     socket.on('roomList', function(data){
-	//XXXX We need to better handle the player type here and displaying stuff
 	if(data.numRooms == 0){
 	    roomName = prompt("You must create a game room.  What should the name be?");
 	    createRoom(roomName);
@@ -269,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	    joinRoom(room, "spectator");
 	}
     });
-
     //alert the server of our player status
     sendClientType('player');
 });
@@ -295,7 +293,7 @@ function createRoom(roomName){
  * @param {position} the new position of the paddle
  */
 function updatePaddleToServer(position){
-	socket.emit('paddleUpdate', {pos: position});
+    socket.emit('paddleUpdate', {pos: position});
 };
 
 /**
@@ -310,4 +308,3 @@ function performAuthentication(){
     
     socket.emit('userAuth', {authData: data});
     */
-};
