@@ -229,48 +229,67 @@ document.onkeydown = movePaddle;
  * The 'document.addEventListener' contains reactions to information sent by the server.
  */
 document.addEventListener('DOMContentLoaded', function() {
-                          // The DOMContentLoaded event happens when the parsing of the current page
-                          // is complete. This means that it only tries to connect when it's done
-                          // parsing.
-                          alert('preCon');
-                          socket = io.connect("10.150.1.204:3000");
-                          alert('postCon');
-                          
-                          performAuthentication();
-                          
-                          socket.on('paddleID', function(data){
-                                    paddleID = data.paddleID;
-                                    });
-                          socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
-                                    //alert('update game');
-                                    leftPad = data.paddle[0];
-                                    rightPad= data.paddle[1];
-                                    xBall = data.ball[0];
-                                    yBall = data.ball[1];
-                                    draw();
-                                    // draw(data.ballPos[0], data.ballPos[1]);
-                                    });
-                          socket.on('scoreUpdate', function(data){
-                                    scoreLeft = data.score[0];
-                                    scoreRight = data.score[1];
-                                    });
-                          
-                          socket.on('roomList', function(data){
-                                    alert('received Room List');
-                                    });
+    // The DOMContentLoaded event happens when the parsing of the current page
+    // is complete. This means that it only tries to connect when it's done
+    // parsing.
+    socket = io.connect("10.150.1.204:3000");
     
-                          //alert the server of our player status
-                          sendClientType('player');
-                          });
+    performAuthentication();
+    socket.on('paddleID', function(data){
+	paddleID = data.paddleID;
+    });
+    socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
+	//alert('update game');
+        leftPad = data.paddle[0];
+        rightPad= data.paddle[1];
+        xBall = data.ball[0];
+        yBall = data.ball[1];
+        draw();
+        // draw(data.ballPos[0], data.ballPos[1]);
+    });
+    socket.on('scoreUpdate', function(data){
+	scoreLeft = data.score[0];
+        scoreRight = data.score[1];
+    });
+    /**When the server sends a room list, the player can pick a room or
+       start a new one
+       */
+    socket.on('roomList', function(data){
+	//XXXX We need to better handle the player type here and displaying stuff
+	if(data.numRooms == 0){
+	    roomName = prompt("You must create a game room.  What should the name be?");
+	    createRoom(roomName);
+	    return;
+	}
+	room = prompt("What room do you want?");
+	clientType = confirm("Player?");
+	if(clientType){
+	    joinRoom(room, "player");
+	}else{
+	    joinRoom(room, "spectator");
+	}
+    });
+
+    //alert the server of our player status
+    sendClientType('player');
+});
 
 /**
- * Alert the server of our client type.
- * @param playType player or spectator
+ * Select the room to join.
+ *@param room a string representing the room name
+ *@param clientType player or spectator as a string
  */
-function sendClientType(playType){
-	socket.emit('clientType', {type: playType});
+function joinRoom(room, clientType){
+    socket.emit('joinRoom', {name: room, clientType: clientType});
 };
 
+/**
+ * Tells the server to make a room just for me.
+ */
+function createRoom(roomName){
+    //XXXXX Client Type should be sent here as well
+    socket.emit('createRoom', {name: roomName});
+};
 /**
  * Update our paddle position with the server.
  * @param {position} the new position of the paddle
