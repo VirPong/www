@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 
 <html>
@@ -16,8 +15,10 @@
         <!-- and the two others provide sizing relativity for the iPad -->
         <!-- and Android respectively. -->
         <link rel="stylesheet" href="css/main.css" type="text/css" />
-        <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
-        <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 768px)" href="css/ipad.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 800px)" href="css/android.css" type="text/css" />	
+        <link rel="stylesheet" media="only screen and (device-width: 320px)" href="css/iphone.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />		
 
         <!-- Include PhoneGap! -->
         <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
@@ -72,40 +73,14 @@
             
             <!-- Our big blue buttons! -->
             <a class="button" href="authentication.html">Log In & Play</a>
-            <a class="button" href="registration.html">Register</a>
-            <a class="button" href="accelTest.html">Native Accel. Data</a>
+            <!-- <a class="button" href="accelTest.html">Native Accel. Data</a> -->
             <a class="button" href="settings.html">Settings</a>
             
+            <br />
+            
             <!-- Small footer text. -->
-            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
+            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserved.</span>
                 
         </div>
     </body>
 </html>
-=======
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <meta name="viewport" content="width=320; user-scalable=no" />
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>PhoneGap</title>
-	  <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title" charset="utf-8">
-	  <script type="text/javascript" charset="utf-8" src="phonegap-1.0.0.js"></script>
-
-  </head>
-  <body onload="" id="stage" class="theme">
-    <div id="info">
-        <img src="logo-blue.gif"
-         width="280"
-         height="150">
-     </div>    
-     <!-- href="javascript:history.go(-1);" -->
-    <a href="PlayGame/gameIndex.html" class="btn large">Play a game!</a>
-	<a href="testingNow.html" class="btn large">test now</a>
-	<a href="http://10.150.1.204:8080" class="btn large">test now ip</a>
-    <div id="viewport" class="viewport" style="display: none;">       
-      <img style="width:60px;height:60px" id="test_img" src=""> </img>
-    </div> 
-  </body>
-</html>
->>>>>>> 99547631399d88f68b54d8078b5e2084359fee1f

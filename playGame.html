@@ -14,11 +14,13 @@
         <!-- Defining our main styles. "main.css" is basic stuff,       -->
         <!-- and the two others provide sizing relativity for the iPad  -->
         <!-- and Android respectively. Also, we have gameplay.css,      -->
-        <!-- which contains the styling for the game board.             -->
-        <link rel="stylesheet" href="css/main.css" type="text/css" />
-        <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
-        <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />	
-        <link rel="stylesheet" href="css/gameplay.css" type="text/css" /> 
+        <!-- which contains the styling for the game board.             -->	
+        <link rel="stylesheet" href="css/main.css" type="text/css" /> 
+        <link rel="stylesheet" href="css/gameplay.css" type="text/css" /> 	
+        <link rel="stylesheet" media="only screen and (device-width: 768px)" href="css/ipad.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 800px)" href="css/android.css" type="text/css" />	
+        <link rel="stylesheet" media="only screen and (device-width: 320px)" href="css/iphone.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />		
         
         <!-- Include PhoneGap, Socket.IO, and our pong.js -->
         <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
@@ -49,6 +51,7 @@
                 
                 // Run some setup for the canvas and pong game.
                 initClient();
+                draw();
             }
             
             /* 
@@ -69,19 +72,17 @@
     
     <body onload="onBodyLoad();"> <!-- When body element loads, call "onBodyLoad()" -->
         
+        <!-- Our nice little menu at the top, with a link back to the main menu. -->
+        <div id="topBar">
+            
+            <a class="topBarButton" href="index.html">Main Menu</a>
+            
+        </div>
+        
         <!-- Our game canvas. We grab the id with JS and do everything we need  -->
         <!-- that way, so we don't really need to define much in the way of     -->
         <!-- attributes here.                                                   -->
         <canvas id="gameCanvas" height="100" width="100"></canvas>
-        
-        <!-- Textual links for moving paddles and for returning to main menu.   -->
-        <a href="#" onClick="changePaddlePosition('W');">Up</a>
-        
-        <a href="#" onClick="changePaddlePosition('S');">Down</a>
-        
-        <a href="#" onClick="draw();">DRAW</a>
-        
-        <a href="index.html">Return to Main Menu</a>
         
     </body>
 </html>

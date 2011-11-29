@@ -25,3 +25,16 @@ div#mainWrapper {
     margin-top: 5%;
     
 }
+
+div#topBar {
+    
+    padding-left: 2%;
+    width: 98%;
+    
+}
+
+canvas#gameCanvas {
+    
+    margin-top: 8%;
+    
+}

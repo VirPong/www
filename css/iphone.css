@@ -1,0 +1,71 @@
+/*
+ * iPhone is close enough to an Android device to use the Android background image.
+ */
+body 
+{
+    background: url('../graphics/androidBackground.png');
+}
+
+/*
+ * Scale the buttons to a good size for Android screens.
+ */
+a.button 
+{    
+    width: 150px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+div#mainWrapper {
+    
+    width: 80%;
+    
+}
+
+div#logo {
+    
+    width: 149px;
+    height: 112px;
+    background-size: 100%;
+    
+}
+
+div#topBar {
+    
+    width: 97%;
+    height: 25px;
+    padding-left: 2%;
+    padding-right: 2%;
+    
+}
+
+a.topBarButton {
+    
+    height: 10px;
+    margin-top: 4px;
+    font-size: 10px;
+    padding-top: 2px;
+    
+}
+
+form#pinEntry {
+    
+    width: 90%;
+    
+}
+
+input#userName, input#userPIN {
+    
+    margin: 0px;
+    width: 100px;
+    height: 20px;
+    font-size: 15px;
+    display: inline-block;
+    
+}
+
+canvas#gameCanvas {
+    
+    margin-top: 8%;
+    
+}

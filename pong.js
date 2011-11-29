@@ -28,7 +28,7 @@ var paddleHeight = gameY/5;
 var motionStep = 10;
 
 //Ball position.
-var xBall = (gameX/2)+10;
+var xBall = gameX/2;
 var yBall = gameY/2;
 
 //Size of the ball
@@ -49,7 +49,7 @@ function initClient(){
 	context = gameCanvas.getContext("2d");
 	//alert("I initialized");
 	context.canvas.width = window.innerWidth*(0.90);
-	context.canvas.height = window.innerHeight*(0.70);
+	context.canvas.height = window.innerHeight*(0.75);
 	screenModifierX = context.canvas.width/100;
 	screenModifierY = context.canvas.height/100;
     
@@ -58,7 +58,7 @@ function initClient(){
 	var font = String(size);
     
 	context.fillStyle = "#ddd";
-	var text = size+"px sans-serf";
+	var text = size+"px Silkscreen-Expanded";
 	context.font = text;
 	context.textBaseline = "top";
 };
@@ -125,7 +125,7 @@ function draw(){
     
     drawPaddles();
 	//alert('clearRect2');
-	drawBall();
+	drawBall(xBall, yBall);
 	//alert('drawn');
 	drawScore();
     drawHalfCourt();
@@ -185,20 +185,27 @@ function drawRect(a, b, c, d, col){
 function drawBall(){
 
     //Draw square "ball"
-    //context.save();
-    //var tlX = (xBall*screenModifierX)-10;
-    //var tlY = (yBall*screenModifierY)-10;
-    //var brX = 20;
-    //var brY = 20;
-    //drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
-  	//context.restore();
-  	
-    var ballMod = screenModifierX;
-	if(screenModifierX > 8){
-		ballMod = 8;
-	};
-	drawRect(xBall*screenModifierX - .5*ballR*ballMod, yBall*screenModifierY - .5*ballR*screenModifierY, 2*ballR*ballMod, 
-	2*ballR*ballMod, 'rgb(255,255,255)');
+    var tlX = (xBall*screenModifierX)-10;
+    var tlY = (yBall*screenModifierX)-10;
+    var brX = 20;
+    var brY = 20;
+    
+    drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
+    
+    /** OLD CIRCLE BALL
+     context.save();
+    
+	context.beginPath();
+	context.fillStyle = 'rgb(240,240,240)'; //color to fill shape in with
+    
+	context.arc(xBall*screenModifierX,yBall*screenModifierY,ballR*screenModifierX,0,Math.PI*2,true);
+	
+    
+    context.closePath();
+	context.fill();
+    
+	context.restore();
+     **/
 };
 
 /**
@@ -229,71 +236,54 @@ document.onkeydown = movePaddle;
  * The 'document.addEventListener' contains reactions to information sent by the server.
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // The DOMContentLoaded event happens when the parsing of the current page
-    // is complete. This means that it only tries to connect when it's done
-    // parsing.
-   socket = io.connect("10.150.1.204:3000");
+                          // The DOMContentLoaded event happens when the parsing of the current page
+                          // is complete. This means that it only tries to connect when it's done
+                          // parsing.
+                          alert('preCon');
+                          socket = io.connect("10.150.1.204:3000");
+                          alert('postCon');
+                          
+                          performAuthentication();
+                          
+                          socket.on('paddleID', function(data){
+                                    paddleID = data.paddleID;
+                                    });
+                          socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
+                                    //alert('update game');
+                                    leftPad = data.paddle[0];
+                                    rightPad= data.paddle[1];
+                                    xBall = data.ball[0];
+                                    yBall = data.ball[1];
+                                    draw();
+                                    // draw(data.ballPos[0], data.ballPos[1]);
+                                    });
+                          socket.on('scoreUpdate', function(data){
+                                    scoreLeft = data.score[0];
+                                    scoreRight = data.score[1];
+                                    });
+                          
+                          socket.on('roomList', function(data){
+                                    alert('received Room List');
+                                    });
     
-    performAuthentication();
-    socket.on('paddleID', function(data){
-	paddleID = data.paddleID;
-    });
-    socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
-	//alert('update game');
-        leftPad = data.paddle[0];
-        rightPad= data.paddle[1];
-        xBall = data.ball[0];
-        yBall = data.ball[1];
-        draw();
-        // draw(data.ballPos[0], data.ballPos[1]);
-    });
-    socket.on('scoreUpdate', function(data){
-	scoreLeft = data.score[0];
-        scoreRight = data.score[1];
-    });
-    /**When the server sends a room list, the player can pick a room or
-       start a new one
-       */
-    socket.on('roomList', function(data){
-	if(data.numRooms == 0){
-	    roomName = prompt("You must create a game room.  What should the name be?");
-	    createRoom(roomName);
-	    return;
-	}
-	room = prompt("What room do you want?");
-	clientType = confirm("Player?");
-	if(clientType){
-	    joinRoom(room, "player");
-	}else{
-	    joinRoom(room, "spectator");
-	}
-    });
-    //alert the server of our player status
-    sendClientType('player');
-});
+                          //alert the server of our player status
+                          sendClientType('player');
+                          });
 
 /**
- * Select the room to join.
- *@param room a string representing the room name
- *@param clientType player or spectator as a string
+ * Alert the server of our client type.
+ * @param playType player or spectator
  */
-function joinRoom(room, clientType){
-    socket.emit('joinRoom', {name: room, clientType: clientType});
+function sendClientType(playType){
+	socket.emit('clientType', {type: playType});
 };
 
-/**
- * Tells the server to make a room just for me.
- */
-function createRoom(roomName){
-    //XXXXX Client Type should be sent here as well
-    socket.emit('createRoom', {name: roomName});
-};
 /**
  * Update our paddle position with the server.
  * @param {position} the new position of the paddle
  */
 function updatePaddleToServer(position){
-    socket.emit('paddleUpdate', {pos: position});
+	socket.emit('paddleUpdate', {pos: position});
 };
 
 /**
@@ -308,3 +298,4 @@ function performAuthentication(){
     
     socket.emit('userAuth', {authData: data});
     */
+};
