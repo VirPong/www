@@ -15,8 +15,10 @@
         <!-- and the two others provide sizing relativity for the iPad -->
         <!-- and Android respectively. -->
         <link rel="stylesheet" href="css/main.css" type="text/css" />
-        <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="css/ipad.css" type="text/css" />		
-        <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="css/android.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 768px)" href="css/ipad.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 800px)" href="css/android.css" type="text/css" />	
+        <link rel="stylesheet" media="only screen and (device-width: 320px)" href="css/iphone.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />			
         
         <!-- Include PhoneGap! -->
         <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
@@ -50,11 +52,14 @@
              */
             function onDeviceReady()
             {
-                // Reference the device's local store in "localStorage"
-                var localStorage = window.localStorage;
+                
+                // Add the listener for a touch move so that we can disable its behavior.
+                document.addEventListener("touchmove", preventBehavior, false);
                 
                 // Prepare the Form.
                 prepareForm();
+                
+                
             }
             
             /*
@@ -65,12 +70,29 @@
              */
             function prepareForm()
             {
+                
                 // If there is a stored username, forward to playGame.
-                if(localStorage.getItem("username")!=null) { window.location = "playGame.html"; }
+                if(window.localStorage.username!=null) {
+                    
+                    document.pinEntry.userName.value = window.localStorage.username;
+                    document.pinEntry.userPIN.value = window.localStorage.pin;
+                    
+                    //alert('jumping! because we have a nonnull username that is ' + localStorage.username); 
+                    
+                    
+                    //window.open("playGame.html", "_self");
+                    //window.location = "playGame.html"; 
+                
+                } else {
                 
                 // Set the form data to guest login data.
                 document.pinEntry.userName.value = "guest";
                 document.pinEntry.userPIN.value = "0000";
+                    
+                }
+                
+                // alert('form prepared!');
+                
             }
             
             /*
@@ -80,12 +102,14 @@
              */
             function handleForm()
             {
-                // Store the data from the input elements in the localStorage K/V pairs.
-                localStorage.setItem("username", document.pinEntry.userName.value);
-                localStorage.setItem("pin", document.pinEntry.userPIN.value);
+                                // Store the data from the input elements in the localStorage K/V pairs.
+                window.localStorage.setItem("username", document.pinEntry.userName.value);
+                window.localStorage.setItem("pin", document.pinEntry.userPIN.value);
                 
                 // Move on to playGame.
-                window.location = "playGame.html";
+                window.location.href = "./playGame.html";
+               // window.location.href = "http://google.com";
+                
             }
             
         </script>
@@ -113,13 +137,14 @@
             <form name="pinEntry" id="pinEntry">
                 
                 <!-- Username -->
-                <input type="text" value="" name="userName" id="userName" onFocus="this.value=''" autocapitalize="off" autocorrect="off" /><br />
+                <input type="text" value="" name="userName" id="userName" onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
                 
                 <!-- PIN -->
-                <input type="password" value="" name="userPIN" id="userPIN" onFocus="this.value=''" autocapitalize="off" autocorrect="off" /><br />
+                <input type="password" value="" name="userPIN" id="userPIN" onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
                 
                 <!-- Submit -->
-                <input type="button" onClick="handleForm()" value="Log In" id="logIn" />
+                <input type="button" value="Log In" id="logIn" onClick="handleForm()" />
+                
                 
             </form>
             
@@ -127,7 +152,7 @@
             
             <!-- For debugging purposes, to clear any locally-stored logins.--> 
             <!-- This will be moved to settings as an actual UI element eventually.-->
-            <a href="javascript:localStorage.clear();window.location.reload();">CLEAR LOCAL STORAGE</a>
+            <a href="javascript:window.localStorage.clear(); window.location.reload();">CLEAR LOCAL STORAGE</a>
             
             <!-- Display footer. -->
             <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
