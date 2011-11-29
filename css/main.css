@@ -175,8 +175,10 @@ input#userName, input#userPIN {
     margin-right: auto;
     margin-left auto;
     margin-bottom: auto;
-    
+
     font-size: 30px;
+
+    display: block;
     
 }
 
@@ -192,12 +194,9 @@ input#userName {
 /*
  * Login button.
  *  - Give it 20px of margin at the top
- *  - 160px x 50px
  */
 input#logIn {
 
     margin-top: 20px;
-    width: 160px;
-    height: 50px;
 
 }
