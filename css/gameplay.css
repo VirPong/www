@@ -10,7 +10,7 @@
 canvas#gameCanvas {
     
     padding: 10px;
-    margin-top: 20px;
+    margin-top: 5%;
     margin-left: auto;
     margin-right: auto;
     background: black;
@@ -21,10 +21,12 @@ canvas#gameCanvas {
 
 /*
  * Define a font face and load the TTF.
- */
+ 
 @font-face {
     
     font-family: 'Silkscreen-Expanded';
     src: url('silkscreen.ttf');
     
 }
+
+*/
