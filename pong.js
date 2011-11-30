@@ -259,8 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	paddleID = data.paddleID;
     });
-    socket.on('gameState', function(data){//expecting arrays for paddle1, 
-        paddle2, ballPos
+    socket.on('gameState', function(data){
+	//expecting arrays for paddle1, paddle2, ballPos
 	//alert('update game');
         leftPad = data.paddle[0];
         rightPad= data.paddle[1];
@@ -283,15 +283,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	    createRoom(roomName);
 	    return;
 	}
-	//roomList = "";
-	//for(i in data.rooms){
-	//    alert(i.name);
-	//    roomList=roomList+i.name+"\n";
-	//}
-	//room = "#X#X#X!!!#X#X#X";
-	//while(data.rooms.indexOf(room)==-1){
-	    room = prompt("What room do you want?");
-	//}
+	roomList = "";
+	for(i in data.rooms){
+	    alert(i.name);
+	  roomList=roomList+i.name+"\n";
+	}
+	room = "#X#X#X!!!#X#X#X";
+	while(data.rooms.indexOf(room)==-1){
+	  room = prompt("What room do you want?");
+	}
 	isPlayer = confirm("Player?");
 	if(isPlayer){
 		joinRoom(room, "player");
