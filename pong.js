@@ -41,6 +41,15 @@ var scoreRight = 0;
 //Which paddle we are
 var paddleID;
 
+// Event identifiers. For sound effects.
+var NOEVENT = 0;
+var WALLBOUNCE = 1;
+var PADDLEBOUNCE = 2;
+
+
+// Sounds
+var paddleBounceSound = new Media('sounds/paddlebounce.wav');
+var wallBounceSound = new Media('sounds/wallbounce.wav');
 
 /**
  * Start the pong game & grab the canvas so that we can modify it in JS.
@@ -254,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
         rightPad= data.paddle[1];
         xBall = data.ball[0];
         yBall = data.ball[1];
+        eventController(data.gameEvent); // eventController executes events
         draw();
         // draw(data.ballPos[0], data.ballPos[1]);
     });
@@ -319,3 +329,35 @@ function performAuthentication(){
     socket.emit('userAuth', {authData: data});
     */
 };
+
+//===============================================================================================
+//===============================================================================================
+//========================================EVENT CODE=============================================
+//===============================================================================================
+//===============================================================================================
+
+/**
+ * Performs actions related to the wall bounce event.
+ */
+function eventController(eventCode){
+    if(eventCode == NOEVENT);
+    if(eventCode == PADDLEBOUNCE){
+        paddleBounceEvent();
+    }
+    if(eventCode == WALLBOUNCE){
+        wallBounceEvent();
+    }
+}
+/**
+ * Performs actions related to the wall bounce event.
+ */
+function wallBounceEvent(){
+    wallBounceSound.play();   
+}
+/**
+ * Performs actions related to the paddle bounce event.
+ */
+function paddleBounceEvent(){
+    paddleBounceSound.play();
+}
+
