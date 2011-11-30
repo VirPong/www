@@ -160,13 +160,19 @@ function drawHalfCourt() {
 
 function drawPaddles() {
     
-    drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), 
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');//xpos, ypos, width, height
+    drawRect(0,
+	     Math.floor(leftPad*screenModifierY),
+	     Math.floor(paddleWidth*screenModifierX), 
+             Math.floor(paddleHeight*screenModifierY), 
+	     'rgb(240,240,240)');//xpos, ypos, width, height
     
-	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');
+    drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),
+	     Math.floor(rightPad*screenModifierY),
+	     Math.floor(paddleWidth*screenModifierX),
+             Math.floor(paddleHeight*screenModifierY), 
+	     'rgb(240,240,240)');
     
-}
+};
 
 /**
  * Draws rectangles on the canvas.
@@ -238,98 +244,6 @@ function drawScore(){
 document.onkeydown = movePaddle;
 
 
-
-//===============================================================================================
-//===============================================================================================
-//========================================SERVER CODE============================================
-//===============================================================================================
-//===============================================================================================
-/**
- * The 'document.addEventListener' contains reactions to information sent by the server.
- */
-document.addEventListener('DOMContentLoaded', function() {
-    // The DOMContentLoaded event happens when the parsing of the current page
-    // is complete. This means that it only tries to connect when it's done
-    // parsing.
-   socket = io.connect("10.150.1.204:3000");
-    
-    performAuthentication();
-    socket.on('paddleID', function(data){
-	paddleID = data.paddleID;
-    });
-    socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
-	//alert('update game');
-        leftPad = data.paddle[0];
-        rightPad= data.paddle[1];
-        xBall = data.ball[0];
-        yBall = data.ball[1];
-        eventController(data.gameEvent); // eventController executes events
-        draw();
-        // draw(data.ballPos[0], data.ballPos[1]);
-    });
-    socket.on('scoreUpdate', function(data){
-	scoreLeft = data.score[0];
-        scoreRight = data.score[1];
-    });
-    /**When the server sends a room list, the player can pick a room or
-       start a new one
-       */
-    socket.on('roomList', function(data){
-	if(data.numRooms == 0){
-	    roomName = prompt("You must create a game room.  What should the name be?");
-	    createRoom(roomName);
-	    return;
-	}
-	room = prompt("What room do you want?");
-	clientType = confirm("Player?");
-	if(clientType){
-	    joinRoom(room, "player");
-	}else{
-	    joinRoom(room, "spectator");
-	}
-    });
-    //alert the server of our player status
-    sendClientType('player');
-});
-
-/**
- * Select the room to join.
- *@param room a string representing the room name
- *@param clientType player or spectator as a string
- */
-function joinRoom(room, clientType){
-    socket.emit('joinRoom', {name: room, clientType: clientType});
-};
-
-/**
- * Tells the server to make a room just for me.
- */
-function createRoom(roomName){
-    //XXXXX Client Type should be sent here as well
-    socket.emit('createRoom', {name: roomName});
-};
-/**
- * Update our paddle position with the server.
- * @param {position} the new position of the paddle
- */
-function updatePaddleToServer(position){
-    socket.emit('paddleUpdate', {pos: position});
-};
-
-/**
- * Asks the user for some login information and stores it for submission to the server.
- */
-function performAuthentication(){
-    
-    var username = localStorage.getItem("username");
-    var pin = localStorage.getItem("pin");
-    
-    /*var data = username + "|" + pin;
-    
-    socket.emit('userAuth', {authData: data});
-    */
-};
-
 //===============================================================================================
 //===============================================================================================
 //========================================EVENT CODE=============================================
@@ -347,17 +261,132 @@ function eventController(eventCode){
     if(eventCode == WALLBOUNCE){
         wallBounceEvent();
     }
-}
+};
 /**
  * Performs actions related to the wall bounce event.
  */
 function wallBounceEvent(){
     wallBounceSound.play();   
-}
+};
 /**
  * Performs actions related to the paddle bounce event.
  */
 function paddleBounceEvent(){
     paddleBounceSound.play();
-}
+};
 
+//===============================================================================================
+//===============================================================================================
+//========================================SERVER CODE============================================
+//===============================================================================================
+//===============================================================================================
+/**
+ * The 'document.addEventListener' contains reactions to information sent by the server.
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // The DOMContentLoaded event happens when the parsing of the current page
+    // is complete. This means that it only tries to connect when it's done
+    // parsing.
+    socket = io.connect("10.150.1.204:3000");
+    
+    performAuthentication();
+    socket.on('paddleID', function(data){
+	if(data.paddleID == 0){
+	    alert("You are the left paddle.");
+	}else{
+	    alert("You are the right paddle.");
+	}
+	paddleID = data.paddleID;
+    });
+    /** Updates the state of the game (basically coordinates). */
+    socket.on('gameState', function(data){
+	//expecting arrays for paddle1, paddle2, ballPos
+        leftPad = data.paddle[0];
+        rightPad= data.paddle[1];
+        xBall = data.ball[0];
+        yBall = data.ball[1];
+        eventController(data.gameEvent); // eventController executes events
+        draw();
+    });
+    socket.on('scoreUpdate', function(data){
+	scoreLeft = data.score[0];
+        scoreRight = data.score[1];
+    });
+    /**When the server sends a room list, the player can pick a room or
+       start a new one
+       */
+    socket.on('roomList', function(data){
+	//First check if there are any rooms and prompt to make a new one
+	//if there are none.
+	if(data.numRooms == 0){
+	    var roomName = prompt("You must create a game room to play in. "+
+				  "What should the name be?");
+	    createRoom(roomName);
+	    return;
+	}
+	//Check if the player wants to use an existing room
+	isNew = confirm("Do you want to create a new game room?");
+	if(isNew){
+	    var roomName = prompt("What do you want the name to be?");
+	    createRoom(roomName);
+	    return;
+	}
+	//Construct the room list
+	//XXXX this doesn't work yet
+	var roomList = "";
+	for(i in data.rooms){
+	  roomList=roomList+i+"\n";
+	}
+	//Prompt for a valid room
+	var room = "#X#X#X!!!#X#X#X";
+	//while(data.rooms.indexOf(room)==-1){
+	  room = prompt(roomList);
+	//}
+	isPlayer = confirm("Player?");
+	if(isPlayer){
+		joinRoom(room, "player");
+	}else{
+		joinRoom(room, "spectator");
+	}
+    });
+    /* A function for alerting the client when a disconnect occurs. */
+    socket.on("disconnect", function(data){
+	alert("You have been disconnected from the server!");
+    });
+    //alert the server of our player status
+    sendClientType('player');
+});
+
+/**
+ * Select the room to join.
+ *@param room a string representing the room name
+ *@param clientType player or spectator as a string
+ */
+function joinRoom(room, clientType){
+    socket.emit('joinRoom', {name: room, clientType: clientType});
+};
+
+/**
+ * Tells the server to make a room just for me.
+ * @param {roomName} the name of the room to create
+ */
+function createRoom(roomName){
+    socket.emit('createRoom', {name: roomName});
+};
+/**
+ * Update our paddle position with the server.
+ * @param {position} the new position of the paddle
+ */
+function updatePaddleToServer(position){
+    socket.emit('paddleUpdate', {pos: position});
+};
+
+/**
+ * Asks the user for some login information and stores it for submission to 
+ * the server.
+ */
+function performAuthentication(){
+    
+    var username = localStorage.getItem("username");
+    var pin = localStorage.getItem("pin");
+};
