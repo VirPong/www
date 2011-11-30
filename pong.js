@@ -277,21 +277,33 @@ document.addEventListener('DOMContentLoaded', function() {
        start a new one
        */
     socket.on('roomList', function(data){
+	//First check if there are any rooms and prompt to make a new one
+	//if there are none.
 	if(data.numRooms == 0){
-	    roomName = prompt("You must create a game room to play in.  What "+
-            "should the name be?");
+	    var roomName = prompt("You must create a game room to play in. "+
+				  "What should the name be?");
 	    createRoom(roomName);
 	    return;
 	}
-	roomList = "";
+	//Check if the player wants to use an existing room
+	isNew = confirm("Do you want to create a new game room?");
+	if(isNew){
+	    var roomName = prompt("What do you want the name to be?");
+	    createRoom(roomName);
+	    return;
+	}
+	//Construct the room list
+	//XXXX this doesn't work yet
+	var roomList = "";
 	for(i in data.rooms){
-	    alert(i.name);
-	  roomList=roomList+i.name+"\n";
+	    alert('hey');
+	  roomList=roomList+i+"\n";
 	}
-	room = "#X#X#X!!!#X#X#X";
-	while(data.rooms.indexOf(room)==-1){
+	//Prompt for a valid room
+	var room = "#X#X#X!!!#X#X#X";
+	//while(data.rooms.indexOf(room)==-1){
 	  room = prompt(roomList);
-	}
+	//}
 	isPlayer = confirm("Player?");
 	if(isPlayer){
 		joinRoom(room, "player");
@@ -299,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		joinRoom(room, "spectator");
 	}
     });
+    /* A function for alerting the client when a disconnect occurs. */
     socket.on("disconnect", function(data){
 	alert("You have been disconnected from the server!");
     });
@@ -317,9 +330,9 @@ function joinRoom(room, clientType){
 
 /**
  * Tells the server to make a room just for me.
+ * @param {roomName} the name of the room to create
  */
 function createRoom(roomName){
-    //XXXXX Client Type should be sent here as well
     socket.emit('createRoom', {name: roomName});
 };
 /**
@@ -331,7 +344,8 @@ function updatePaddleToServer(position){
 };
 
 /**
- * Asks the user for some login information and stores it for submission to the server.
+ * Asks the user for some login information and stores it for submission to 
+ * the server.
  */
 function performAuthentication(){
     
