@@ -41,6 +41,15 @@ var scoreRight = 0;
 //Which paddle we are
 var paddleID;
 
+// Event identifiers. For sound effects.
+var NOEVENT = 0;
+var WALLBOUNCE = 1;
+var PADDLEBOUNCE = 2;
+
+
+// Sounds
+var paddleBounceSound = new Media('sounds/paddlebounce.wav');
+var wallBounceSound = new Media('sounds/wallbounce.wav');
 
 /**
  * Start the pong game & grab the canvas so that we can modify it in JS.
@@ -235,6 +244,36 @@ function drawScore(){
 document.onkeydown = movePaddle;
 
 
+//===============================================================================================
+//===============================================================================================
+//========================================EVENT CODE=============================================
+//===============================================================================================
+//===============================================================================================
+
+/**
+ * Performs actions related to the wall bounce event.
+ */
+function eventController(eventCode){
+    if(eventCode == NOEVENT);
+    if(eventCode == PADDLEBOUNCE){
+        paddleBounceEvent();
+    }
+    if(eventCode == WALLBOUNCE){
+        wallBounceEvent();
+    }
+};
+/**
+ * Performs actions related to the wall bounce event.
+ */
+function wallBounceEvent(){
+    wallBounceSound.play();   
+};
+/**
+ * Performs actions related to the paddle bounce event.
+ */
+function paddleBounceEvent(){
+    paddleBounceSound.play();
+};
 
 //===============================================================================================
 //===============================================================================================
@@ -259,15 +298,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	paddleID = data.paddleID;
     });
+    /** Updates the state of the game (basically coordinates). */
     socket.on('gameState', function(data){
 	//expecting arrays for paddle1, paddle2, ballPos
-	//alert('update game');
         leftPad = data.paddle[0];
         rightPad= data.paddle[1];
         xBall = data.ball[0];
         yBall = data.ball[1];
+        eventController(data.gameEvent); // eventController executes events
         draw();
-        // draw(data.ballPos[0], data.ballPos[1]);
     });
     socket.on('scoreUpdate', function(data){
 	scoreLeft = data.score[0];
@@ -296,7 +335,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	//XXXX this doesn't work yet
 	var roomList = "";
 	for(i in data.rooms){
-	    alert('hey');
 	  roomList=roomList+i+"\n";
 	}
 	//Prompt for a valid room
@@ -352,9 +390,3 @@ function performAuthentication(){
     var username = localStorage.getItem("username");
     var pin = localStorage.getItem("pin");
 };
-    
-    /*var data = username + "|" + pin;
-    
-    socket.emit('userAuth', {authData: data});
-    */
-
