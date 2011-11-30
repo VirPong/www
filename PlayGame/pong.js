@@ -26,6 +26,12 @@ var WHAT_PADDLE_AM_I;
 
 var pieterMode = 0;
 
+// Event identifiers.
+var NOEVENT = 0;
+var WALLBOUNCE = 1;
+var PADDLEBOUNCE = 2;
+
+
 //var media = new Media("pong2.wav");
 
 /**
@@ -264,4 +270,16 @@ function sendScore(){
 function promptLogin(){
 	name = prompt("Username please. (Use \"guest\" if you don't already have an account.");
 	pass = prompt("Please enter your password. (If you are logging in as \"guest\" then please use \"pass\".)");
+}
+
+/**
+ * Event method. Does things depending on events and stuff or something //TODO
+ */
+function eventController(eventCode){
+    if(eventCode == PADDLEBOUNCE){
+        //TODO
+    }
+    if(eventCode == WALLBOUNCE){
+        //TODO
+    }
 }
