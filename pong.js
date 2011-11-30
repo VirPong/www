@@ -232,13 +232,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of the current page
     // is complete. This means that it only tries to connect when it's done
     // parsing.
-   socket = io.connect("10.150.1.204:3000");
+    socket = io.connect("10.150.1.204:3000");
     
     performAuthentication();
     socket.on('paddleID', function(data){
 	paddleID = data.paddleID;
     });
-    socket.on('gameState', function(data){//expecting arrays for paddle1, paddle2, ballPos
+    socket.on('gameState', function(data){//expecting arrays for paddle1, 
+        paddle2, ballPos
 	//alert('update game');
         leftPad = data.paddle[0];
         rightPad= data.paddle[1];
@@ -256,16 +257,24 @@ document.addEventListener('DOMContentLoaded', function() {
        */
     socket.on('roomList', function(data){
 	if(data.numRooms == 0){
-	    roomName = prompt("You must create a game room.  What should the name be?");
+	    roomName = prompt("You must create a game room to play in.  What "+
+            "should the name be?");
 	    createRoom(roomName);
 	    return;
 	}
-	room = prompt("What room do you want?");
-	clientType = confirm("Player?");
-	if(clientType){
-	    joinRoom(room, "player");
+	roomList = "";
+	for(i = 0; i<data.numRooms; i=i+1){
+	    roomList=roomList+data.rooms[i]+"\n";
+	}
+	room = "#X#X#X!!!#X#X#X";
+	while(data.rooms.indexOf(room)==-1){
+	    room = prompt("What room do you want?"+roomList);
+	}
+	isPlayer = confirm("Player?");
+	if(isPlayer){
+		joinRoom(room, "player");
 	}else{
-	    joinRoom(room, "spectator");
+		joinRoom(room, "spectator");
 	}
     });
     //alert the server of our player status
@@ -303,6 +312,7 @@ function performAuthentication(){
     
     var username = localStorage.getItem("username");
     var pin = localStorage.getItem("pin");
+};
     
     /*var data = username + "|" + pin;
     
