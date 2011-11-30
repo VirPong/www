@@ -1,0 +1,202 @@
+/* 
+ *  Styling of the body element.
+ *  - Setting the padding to zero sort of evens the playing field.
+ *  - Background color set to a nice deep blue.
+ *  - Text color is set to a very dark grey.
+ *  - As far as fonts go, the choice goes from left to right as written.
+ */
+body {
+    
+    padding: 0px;
+    background-color: #0F336E;
+    color: #333333;
+    font-family: Calibri, Candara, Trebuchet MS, sans-serif;
+    
+}
+
+/*
+ *  Styling of the main wrapper DIV.
+ *  - Top and bottom margins at 5% (relative to screen size).
+ *  - Padding of the DIV all around at 5% (relative to screen size).
+ *      ** Except the bottom, which is a strict 5px. 
+ *  - Automatic margins on left and right center the DIV
+ *  - Width 60% of the screen.
+ *  - Align text in the center.
+ *  - Put a gradient in the background with a solid color as a back-up
+ *    option, should the feature not be supported.
+ *  - Round the corners with -webkit-border-radius.
+ */
+div#mainWrapper {
+    
+    margin-top: 5%;
+    margin-bottom: 5%;
+    padding: 5%;
+    padding-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    text-align: center;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3E3E3), to(#BBBBBB));
+    background-color: #DDDDDD;
+    -webkit-border-radius: 14px;
+    
+}
+
+/*
+ *  Make a div the size of our logo image and put the logo as the "background".
+ *  - Auto-margins center the DIV.
+ */
+div#logo {
+    
+    width: 213px;
+    height: 161px;
+    margin-left: auto;
+    margin-right: auto;
+    background-image: url('../graphics/virPongLogo.png');
+    
+}
+
+/*
+ *  Styling of the nice big blue buttons.
+ *  - Margin is a relative 5% of the screen.
+ *    ** Of course, we have margin-left and margin-right automatic to center the element.
+ *  - Treat the <a> element as a block-type (like <div>) element.
+ *  - Remove any default text decoration (underline).
+ *  - Round the corners.
+ *  - Set a gradient as the background.
+ *  - Pad the element with 10 pixels all around.
+ *  - Make text white.
+ *  - Put a nice dark shadow under the text for some eye-candy.
+ */
+a.button {
+        
+    margin: 5%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-decoration: none;
+    -webkit-border-radius: 8px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#122FB3), to(#212D61));
+    padding: 10px;
+    color: white;
+    text-shadow: 2px 2px 2px #333;
+    
+}
+
+/*
+ * Small font size for the footer.
+ */
+span#footerMeta {
+    
+    font-size: 8px;
+    
+}
+
+/*
+ * This is the top menu bar on the screen on non-main-menu pages.
+ *  - 40 pixels tall
+ *  - Spread across whole screen.
+ *  - Pad by 5% on each side
+ *  - Position this bar at the top of the screen.
+ *  - Make a nice gradient for a background.
+ *  - Put a 30px margin under the menu bar.
+ */
+div#topBar {
+    
+    height: 40px;
+    width: 90%;
+    padding-left: 5%;
+    padding-right: 5%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#7A7A7A), to(#303030));
+    margin-bottom: 30px;
+    
+}
+
+/*
+ * The buttons we see in the top menu bar.
+ *  - Make sure to display the <a> as a <div>
+ *  - 80px x 20px
+ *  - Make a nice gradient for the background
+ *  - Round the corners.
+ *  - Make text white.
+ *  - Remove text decoration (underline, etc)
+ *  - Center text.
+ *  - Pad 4px on top and bottom, 6px left and right.
+ *  - Put a margin of 5px on top to move it down to the vertical center.
+ */
+a.topBarButton {
+    
+    display: block;
+    height: 20px;
+    width: 80px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#000000));
+    -webkit-border-radius: 3px;
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-top: 5px;
+    
+}
+
+/*
+ * Our login form.
+ *  - Set a width so our centering works.
+ *  - Use the automatic margin trick to center the element.
+ */
+form#pinEntry {
+    
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+/*
+ * Input elements for username and PIN.
+ *  - 160px x 40px
+ *  - Center the text
+ *  - Center the element on the screen.
+ *  - Font size is 30px.
+ */
+input#userName, input#userPIN {
+    
+    width: 160px;
+    height: 40px;
+    text-align: center;
+    
+    margin-right: auto;
+    margin-left auto;
+    margin-bottom: auto;
+
+    font-size: 30px;
+
+    display: block;
+    
+}
+
+/*
+ * Override the "auto" bottom margin and make it exactly 20px.
+ */
+input#userName { 
+
+    margin-bottom: 20px;
+
+}
+
+/*
+ * Login button.
+ *  - Give it 20px of margin at the top
+ */
+input#logIn {
+
+    margin-top: 20px;
+
+}

@@ -1,0 +1,40 @@
+/*
+ * iPad has a special 
+ */
+body {
+    
+    background: url('../graphics/iPadBackground.png');
+    
+}
+
+/*
+ * Make buttons extra wide and their text extra big on iPad.
+ */
+a.button {
+    
+    width: 300px;
+    font-size: 30px;
+    
+}
+
+/*
+ * Make the main wrapper a little lower off the top of the screen on the iPad.
+ */
+div#mainWrapper {
+    
+    margin-top: 5%;
+    
+}
+
+div#topBar {
+    
+    padding-left: 2%;
+    width: 98%;
+    
+}
+
+canvas#gameCanvas {
+    
+    margin-top: 8%;
+    
+}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+    
+        <!-- Title, so we can keep track of what page this is, even if PhoneGap doesn't display it. -->
+        <title>VirPong Mobile Client: Native Accelerometer & Sound Test </title>
+        
+        <!-- Defining the size of the viewport. This is useful for -->
+        <!-- mobile devices for the sake of scaling and disabling resizing. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" charset="utf-8" />
+        
+        <!-- Defining our main styles. "main.css" is basic stuff, -->
+        <!-- and the two others provide sizing relativity for the iPad -->
+        <!-- and Android respectively. -->
+        <link rel="stylesheet" href="css/main.css" type="text/css" />
+        <link rel="stylesheet" media="only screen and (device-width: 768px)" href="css/ipad.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 800px)" href="css/android.css" type="text/css" />	
+        <link rel="stylesheet" media="only screen and (device-width: 320px)" href="css/iphone.css" type="text/css" />		
+        <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />			
+        
+        <!-- Include PhoneGap! -->
+        <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+        
+        <!-- Some basic JS for this document. -->
+        <script type="text/javascript">
+            
+            /*
+             * This function takes an event and disables the default behavior.
+             * @param   event   e   The event we're preventing the behavior of.
+             */
+            function preventBehavior(e)
+            { 
+                e.preventDefault(); 
+            }
+            
+            
+            /* 
+             * When the body element loads, create an event listener
+             * to fire off function "onDeviceReady" when the device
+             * reports ready.
+             */
+            function onBodyLoad()
+            {		
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+            
+            
+            /* 
+             * This gets fired off when the device reports ready.
+             */
+            function onDeviceReady()
+            {
+                // Add the listener for a touch move so that we can disable its behavior.
+                document.addEventListener("touchmove", preventBehavior, false);
+                
+                // Set the frequency of refresh for Accelerometer data.
+                var options = { frequency: 50 };
+                
+                // Start watching accerlation and point to it with watchID.
+                var watchID = navigator.accelerometer.watchAcceleration(onSuccess,
+                                                                        onError,
+                                                                        options);
+            }
+            
+            
+            /*
+             * Contains the work done each time acceleration is audited. Right now,
+             * we display the raw data with a timestamp, as well as the calculated
+             * position, which is taken from the getPosition function.
+             * @param   acceleration    An object containing the current acceleration
+             *                          values. (x,y,z,timestamp).
+             */
+            function onSuccess(acceleration)
+            { 
+                // Construct the string for displaying raw data (with position).
+                var theText =   'AccelX: ' + (acceleration.x) + '<br />' +
+                                'AccelY: ' + (acceleration.y) + '<br />' +
+                                'AccelZ: ' + (acceleration.z) + '<br />' +
+                                'Time:   ' + acceleration.timestamp + '<br /><br /><br /><br />Position: ' + getPosition(acceleration);
+                
+                // Get paddlePosition from getPosition, round it to an integer
+                // scale it up and add the "px" to it so it can be injected
+                // into CSS styling for data visualization in paddle form.
+                var paddlePosition = Math.round(getPosition(acceleration));
+                    paddlePosition = paddlePosition * 4;
+                    paddlePosition = paddlePosition + "px";
+            
+                // Update the text box to show our most current raw data.
+                document.getElementById("accelData").innerHTML = theText;
+                
+                // Update the position of the "paddle" in our visualization.
+                document.getElementById("thePaddle").style.left = paddlePosition;
+                
+            }
+            
+            /*
+             * Fires off an alert if there's an error in the collection of acceleration.
+             */
+            function onError(acceleration) {
+                
+                alert('Error!');
+                
+            }
+            
+            // Setup for calculating position.
+            // These are basically a bunch of initial values.
+            // Their nomenclature makes clear their purpose.
+            var currentAcceleration = 0;
+            var currentVelocity = 0;
+            var currentPosition = 50;
+            
+            var previousAcceleration = 0;
+            var previousVelocity = 0;
+            var previousPosition = 0;
+            
+            // What to use as a frequency to calculate passing
+            // of time between accelerometer data refreshes.
+            var TIME = .3;
+            
+            /*
+             * Calculates the position of the "paddle" given accelerometer data from tilt-action.
+             * @param   acceleration    The acceleration data (x,y,z,timestamp).
+             * @return  int position    An integer from 0 to 100 representing position.
+             */
+            function getPosition(acceleration) {
+                
+                // Invert acceleration for the sake of mapping the tilts
+                // in the correct direction.
+                currentAcceleration = -1*acceleration.y;
+                
+                // Double the acceleration for more usable data.
+                var virtualAcceleration = 2*currentAcceleration;
+                
+                // This detects if acceleration is in the opposite direction
+                // of velocity, such as when we're changing direction.
+                if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
+                    
+                    // Instead of doubling the acceleration, quadruple it.
+                    // This makes the deceleration and change of direction
+                    // happen much more quickly.
+                    virtualAcceleration = currentAcceleration * 4;
+                    
+                }
+                
+                // Add TIME * virtualAcceleration to the previous Velocity
+                // to update it to what is close to what the current Velocity
+                // would be.
+                currentVelocity = previousVelocity + (TIME * virtualAcceleration);
+                
+                // Find the midpoint between previous and current.
+                var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
+               
+                // Just as we did with the Velocity from Acceleration, do to Position
+                // from Velocity.
+                currentPosition = currentPosition + (TIME * averageVelocity);
+                previousPosition = currentPosition;
+                
+                // Set the currents to the previouses to prepare for the next cycle through this function.
+                previousVelocity = currentVelocity;
+                previousAcceleration = currentAcceleration;
+                
+                // Prevent us from going over 100 or under 0.
+                if(currentPosition>100) { currentPosition = 100; }
+                if(currentPosition<0) { currentPosition = 0; }
+                
+                // If we're at either end of the range, set acceleration and velocity
+                // to zero so that we immediately change direction.
+                if(currentPosition==0||currentPosition==100) 
+                { 
+                    previousVelocity = 0;
+                    previousAcceleration = 0;
+                    currentVelocity = 0;
+                    currentAcceleration = 0; 
+                }
+                
+                // Return our calculated position. 
+                return currentPosition;
+                
+            }
+            
+            /*
+             * Testing sound. Just playing the WAV file when called.
+             */
+            function makeSound()
+            {
+                // Make the PhoneGap Media object
+                var testSound = new Media('test.wav');
+                testSound.play();                
+            }
+            
+        </script>
+    
+    </head>
+    
+    <body onload="onBodyLoad()"> <!-- Fire onBodyLoad() when the body finishes loading. -->
+        
+        <!-- Our nice little menu at the top, with a link back to the main menu. -->
+        <div id="topBar">
+            
+            <a class="topBarButton" href="index.html">Main Menu</a>
+        
+        </div>
+        
+        <!-- Main page wrapper -->
+        <div id="mainWrapper">
+            
+            <!-- Display logo -->
+            <div id="logo"></div>
+            
+            <br />
+            
+            <!-- Show the accelerometer data. -->
+            <div style="width: 70%; margin-right: auto; margin-left: auto; background-color: white; color: black;" id="accelData"> </div>
+            
+            <br /><br />
+            
+            <!-- Link for testing sound. -->
+            <a href="javascript:makeSound()">CLICK HERE TO TEST SOUND</a>
+            
+            <br /><br /><br />
+            
+            <!-- Our DIVs for simulating a paddle based on acceleromter data. -->
+            <div style="width: 400px; height: 20px; background-color: white;">
+                
+                <div id="thePaddle" style="width: 60px; margin-left: -15px; position: relative; left: 100px; background-color: #000000;">
+                
+                    |||||
+            
+                </div>
+            
+            </div>
+            
+            <!-- Show footer. -->
+            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserved.</span>
+                
+        </div>
+                
+    </body>
+                
+</html>

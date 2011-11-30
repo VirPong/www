@@ -1,0 +1,17 @@
+/*
+ * Android has a special background for its screen size.
+ */
+body 
+{
+    background: url('../graphics/androidBackground.png');
+}
+
+/*
+ * Scale the buttons to a good size for Android screens.
+ */
+a.button 
+{    
+    width: 200px;
+    font-size: 14px;
+    color: red;
+}
