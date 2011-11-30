@@ -151,13 +151,19 @@ function drawHalfCourt() {
 
 function drawPaddles() {
     
-    drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), 
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');//xpos, ypos, width, height
+    drawRect(0,
+	     Math.floor(leftPad*screenModifierY),
+	     Math.floor(paddleWidth*screenModifierX), 
+             Math.floor(paddleHeight*screenModifierY), 
+	     'rgb(240,240,240)');//xpos, ypos, width, height
     
-	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');
+    drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),
+	     Math.floor(rightPad*screenModifierY),
+	     Math.floor(paddleWidth*screenModifierX),
+             Math.floor(paddleHeight*screenModifierY), 
+	     'rgb(240,240,240)');
     
-}
+};
 
 /**
  * Draws rectangles on the canvas.
@@ -246,6 +252,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     performAuthentication();
     socket.on('paddleID', function(data){
+	if(data.paddleID == 0){
+	    alert("You are the left paddle.");
+	}else{
+	    alert("You are the right paddle.");
+	}
 	paddleID = data.paddleID;
     });
     socket.on('gameState', function(data){//expecting arrays for paddle1, 
@@ -272,20 +283,24 @@ document.addEventListener('DOMContentLoaded', function() {
 	    createRoom(roomName);
 	    return;
 	}
-	roomList = "";
-	for(i = 0; i<data.numRooms; i=i+1){
-	    roomList=roomList+data.rooms[i]+"\n";
-	}
-	room = "#X#X#X!!!#X#X#X";
-	while(data.rooms.indexOf(room)==-1){
-	    room = prompt("What room do you want?"+roomList);
-	}
+	//roomList = "";
+	//for(i in data.rooms){
+	//    alert(i.name);
+	//    roomList=roomList+i.name+"\n";
+	//}
+	//room = "#X#X#X!!!#X#X#X";
+	//while(data.rooms.indexOf(room)==-1){
+	    room = prompt("What room do you want?");
+	//}
 	isPlayer = confirm("Player?");
 	if(isPlayer){
 		joinRoom(room, "player");
 	}else{
 		joinRoom(room, "spectator");
 	}
+    });
+    socket.on("disconnect", function(data){
+	alert("You have been disconnected from the server!");
     });
     //alert the server of our player status
     sendClientType('player');
@@ -328,4 +343,4 @@ function performAuthentication(){
     
     socket.emit('userAuth', {authData: data});
     */
-};
+
