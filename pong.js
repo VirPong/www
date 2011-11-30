@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	room = "#X#X#X!!!#X#X#X";
 	while(data.rooms.indexOf(room)==-1){
-	  room = prompt("What room do you want?");
+	  room = prompt(roomList);
 	}
 	isPlayer = confirm("Player?");
 	if(isPlayer){
