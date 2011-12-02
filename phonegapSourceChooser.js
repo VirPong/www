@@ -16,7 +16,7 @@ if((userAgent.indexOf("Android")!=-1)) {
     
 }
 
-var filename = "phonegap-1.0.0-" + thePlatform + ".js";
+var filename = "phonegap-1.2.0-" + thePlatform + ".js";
 
 var fileref=document.createElement('script');
 fileref.setAttribute("type","text/javascript");
