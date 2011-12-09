@@ -2,19 +2,20 @@
 
 <html>
 
+<<<<<<< HEAD
   <head>
     
     <!-- Title, so we can keep track of what page this is, even if 
 	 PhoneGap doesn't display it. -->
     <title>VirPong Mobile Client: Gameplay</title>
-    
+     
     <!-- Defining the size of the viewport. This is useful for -->
     <!-- mobile devices for the sake of scaling and disabling resizing. -->
     <meta name="viewport" 
 	  content="width=device-width, initial-scale=1.0, 
 		   maximum-scale=1.0, user-scalable=no;" 
 	  charset="utf-8" />
-    
+      
     <!-- Defining our main styles. "main.css" is basic stuff,       -->
     <!-- and the two others provide sizing relativity for the iPad  -->
     <!-- and Android respectively. Also, we have gameplay.css,      -->
@@ -31,15 +32,16 @@
 	  href="css/iphone.css" type="text/css" />		
     
     <!-- Include PhoneGap, Socket.IO, and our pong.js -->
-    <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js">
-    </script>
+    <!--<script type="text/javascript" charset="utf-8" 
+	src="phonegap-1.2.0.js"></script>-->
+    <script type="text/javascript" charset="utf-8" 
+	    src="phonegapSourceChooser.js"></script>      
     <script type="text/javascript" charset="utf-8" 
 	    src="http://10.150.1.204:3000/socket.io/socket.io.js"></script>
     <script type="text/javascript" charset="utf-8" src="pong.js"></script>
     
     <!-- Some JS for this page -->
-    <script type="text/javascript">
-      
+    <script type="text/javascript">  
       /*
       * This function takes an event and disables the default behavior.
       * @param   event   e   The event we're preventing the behavior of.
