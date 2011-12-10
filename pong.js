@@ -1,8 +1,9 @@
 /*@author Kyle Wenholz 
- * Contains user interface information, as well as communication to the server
- * and the wiimote.*/
+ * Contains user interface information, as well as communication to the 
+ * server and the wiimote.
+*/
 
-//Username and password, apparently.
+//Username and password.
 var name;
 var pass;
 //The canvas object handle.
@@ -48,15 +49,14 @@ var PADDLEBOUNCE = 2;
 
 
 // Sounds
-var paddleBounceSound = new Media('sounds/paddlebounce.wav');
-var wallBounceSound = new Media('sounds/wallbounce.wav');
+//var paddleBounceSound = new Media('sounds/paddlebounce.wav');
+//var wallBounceSound = new Media('sounds/wallbounce.wav');
 
 /**
- * Start the pong game & grab the canvas so that we can modify it in JS.
+ * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
 function initClient(){
 	context = gameCanvas.getContext("2d");
-	//alert("I initialized");
 	context.canvas.width = window.innerWidth*(0.90);
 	context.canvas.height = window.innerHeight*(0.75);
 	screenModifierX = context.canvas.width/100;
@@ -72,94 +72,48 @@ function initClient(){
 	context.textBaseline = "top";
 };
 
-
-
-//===============================================================================================
-//===============================================================================================
-//===================================PADDLE HANDLING CODE========================================
-//===============================================================================================
-//===============================================================================================
-
-/**
- * Receive the input and send it to changePaddlePosition(), which actually changes the paddle position.
- * @param {e} the event passed by the keypress.
- */
-function movePaddle(e) {
-	var evntObj = (document.all)?event.keyCode:e.keyCode;
-	var actualKey = String.fromCharCode(evntObj);
-	changePaddlePosition(actualKey);
-};
-
-
-/**
- * Change the value of leftPaddle or rightPaddle so that it will draw in the correct place.
- *  @param {actualKey} The string value of the key pressed.
- */
-function changePaddlePosition(actualKey) {
-	if(paddleID == 0){
-		if(actualKey == 'W'){ //check which key was pressed
-			if(leftPad > 0){ // do nothing if it would move paddle out of frame
-				leftPad = leftPad - motionStep;
-			}
-		}else if(actualKey == 'S'){
-			if(leftPad < (gameY - paddleHeight)){
-				leftPad = leftPad + motionStep;
-			}
-		}updatePaddleToServer(leftPad);
-	}else{
-		if(actualKey == 'W'){ //check which key was pressed
-			if(rightPad > 0){ // do nothing if it would move paddle out of frame
-				rightPad = rightPad - motionStep;
-			}
-		}if(actualKey == 'S'){
-			if(rightPad < (gameY - paddleHeight)){
-				rightPad = rightPad + motionStep;
-			}
-		}updatePaddleToServer(rightPad);
-	}
-};
-
-//===============================================================================================
-//===============================================================================================
-//========================================DRAWING CODE===========================================
-//===============================================================================================
-//===============================================================================================
+ 
+//========================================================================
+//========================================================================
+//=============================DRAWING CODE===============================
+//========================================================================
+//========================================================================
 
 
 /**
  * Draws the game state.
  */
 function draw(){
-	context.clearRect(0,0, Math.floor(gameX*screenModifierX),Math.floor(gameY*screenModifierY)); //clear the frame
-    
+    context.clearRect(0,0, Math.floor(gameX*screenModifierX),
+		      Math.floor(gameY*screenModifierY)); //clear the frame
     drawPaddles();
-	//alert('clearRect2');
-	drawBall();
-	//alert('drawn');
-	drawScore();
+    //alert('clearRect2');
+    drawBall();
+    //alert('drawn');
+    drawScore();
     drawHalfCourt();
 };
 
 
 /*
- * Draw the half court line.
+ * Draws a half court line.
  */
 function drawHalfCourt() {
-    
     var width = 3;
     var height = 3;
     var topY = 1.5*height;
     while(topY < gameY*screenModifierY - 1.5*height) {
-        
-        drawRect(gameX*screenModifierX/2 - .5*width, topY, width, height, 'rgb(240,240,240)');
+        drawRect(gameX*screenModifierX/2 - .5*width, topY, width, height, 
+		 'rgb(240,240,240)');
         topY = topY + 2*height;
-        
     }
     
-}
+};
 
-function drawPaddles() {
-    
+/**
+ * Draws paddles based on the field positions.
+ */
+function drawPaddles() {   
     drawRect(0,
 	     Math.floor(leftPad*screenModifierY),
 	     Math.floor(paddleWidth*screenModifierX), 
@@ -171,7 +125,6 @@ function drawPaddles() {
 	     Math.floor(paddleWidth*screenModifierX),
              Math.floor(paddleHeight*screenModifierY), 
 	     'rgb(240,240,240)');
-    
 };
 
 /**
@@ -199,7 +152,6 @@ function drawRect(a, b, c, d, col){
  */
 function drawBall(){
 
-  //  context.save();
     //Draw square "ball"
     var tlX = (xBall*screenModifierX)-10;
     var tlY = (yBall*screenModifierY)-10;
@@ -207,48 +159,27 @@ function drawBall(){
     var brY = ballR*3;
     
     drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
-    
-//    context.restore();
-    
-    /** OLD CIRCLE BALL
-     context.save();
-    
-	context.beginPath();
-	context.fillStyle = 'rgb(240,240,240)'; //color to fill shape in with
-    
-	context.arc(xBall*screenModifierX,yBall*screenModifierY,ballR*screenModifierX,0,Math.PI*2,true);
-	
-    
-    context.closePath();
-	context.fill();
-    
-	context.restore();
-     **/
 };
 
 /**
  * Draws current score on the canvas. 
  */
 function drawScore(){
-	var score;
-	score = String(scoreLeft);
-	context.fillText('P1: ' + score, gameX*screenModifierX/5, 10);
+    var score;
+    score = String(scoreLeft);
+    context.fillText('P1: ' + score, gameX*screenModifierX/5, 10);
     
-	var score;
-	score = String(scoreRight);
-	context.fillText('P2: ' + score, 2.5*gameX*screenModifierX/4,10);
-};
+    var score;
+    score = String(scoreRight);
+    context.fillText('P2: ' + score, 2.5*gameX*screenModifierX/4,10);
+};	
 
 
-//Listen for keypresses as input methods
-document.onkeydown = movePaddle;
-
-
-//===============================================================================================
-//===============================================================================================
-//========================================EVENT CODE=============================================
-//===============================================================================================
-//===============================================================================================
+//========================================================================
+//========================================================================
+//==============================EVENT CODE================================
+//========================================================================
+//========================================================================
 
 /**
  * Performs actions related to the wall bounce event.
@@ -275,18 +206,97 @@ function paddleBounceEvent(){
     paddleBounceSound.play();
 };
 
-//===============================================================================================
-//===============================================================================================
-//========================================SERVER CODE============================================
-//===============================================================================================
-//===============================================================================================
+
+//========================================================================
+//========================================================================
+//==============================INPUT CODE================================
+//========================================================================
+//========================================================================
+
 /**
- * The 'document.addEventListener' contains reactions to information sent by the server.
+ * Initializes the appropriate input methods for playing a game.
+ * @param {method} a string for the desired input method. 
+ * "K" = Keyboard
+ * "T" = Touchscreen
+ * "W" = Wii Remote
+ * "A" = Local Accelerometer
+**/
+function initInputMethod(method){
+    if(method == "K"){
+	document.onkeydown = movePaddle;
+    }if(method == "T"){
+	//DRAW THE BUTTONS
+	alert("You selected touchscreen.");
+    }if(method == "W"){
+	alert("You selected Wii Remote.");
+	document.onkeydown = movePaddle;
+    }if(method == "A"){
+	//XXXX Hook into the accelerometer stuff
+	alert("You picked local accelerometer.");
+    }
+};
+//Listen for keypresses as input methods
+document.onkeydown = movePaddle;
+
+/**
+ * Receive the input and send it to changePaddlePosition(), which actually 
+ * changes the paddle position.
+ * @param {e} the event passed by the keypress.
  */
+function movePaddle(e) {
+	var evntObj = (document.all)?event.keyCode:e.keyCode;
+	var actualKey = String.fromCharCode(evntObj);
+	changePaddlePosition(actualKey);
+};
+
+
+/**
+ * Change the value of leftPaddle or rightPaddle so that it will draw in 
+ * the correct place.  This method is for a string input.  "W" is down and
+ * "S" is up. 
+ *  @param {actualKey} The string value of the key pressed.
+ */
+function changePaddlePosition(actualKey) {
+    if(paddleID == 0){
+	if(actualKey == 'W'){ //check which key was pressed
+	    if(leftPad > 0){ 
+		// do nothing if it would move paddle out of frame
+		leftPad = leftPad - motionStep;
+	    }
+	}else if(actualKey == 'S'){
+	    if(leftPad < (gameY - paddleHeight)){
+		leftPad = leftPad + motionStep;
+	    }
+	}updatePaddleToServer(leftPad);
+	}else{
+	    if(actualKey == 'W'){ //check which key was pressed
+		if(rightPad > 0){ 
+		    // do nothing if it would move paddle out of frame
+		    rightPad = rightPad - motionStep;
+		}
+	    }if(actualKey == 'S'){
+		if(rightPad < (gameY - paddleHeight)){
+		    rightPad = rightPad + motionStep;
+		}
+	    }updatePaddleToServer(rightPad);
+	}		
+};	
+
+
+//========================================================================
+//========================================================================
+//=============================SERVER CODE================================
+//========================================================================
+//========================================================================
+/**
+ * The 'document.addEventListener' contains reactions to information sent 
+ * by the server.
+ */
+//XXXX We need to fix this to not be an onload event.  Maybe a button?
 document.addEventListener('DOMContentLoaded', function() {
-    // The DOMContentLoaded event happens when the parsing of the current page
-    // is complete. This means that it only tries to connect when it's done
-    // parsing.
+    // The DOMContentLoaded event happens when the parsing of 
+    // the current page is complete. This means that it only tries to 
+    //connect when it's done parsing.
     socket = io.connect("10.150.1.204:3000");
     
     performAuthentication();
@@ -319,14 +329,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	//First check if there are any rooms and prompt to make a new one
 	//if there are none.
 	if(data.numRooms == 0){
-	    var roomName = prompt("You must create a game room to play in. "+
-				  "What should the name be?");
+	    var roomName = prompt("You must create a game room to play "+
+				  "in. What should the name be?");
 	    createRoom(roomName);
 	    return;
 	}
 	//Check if the player wants to use an existing room
 	isNew = confirm("Do you want to create a new game room?");
-	if(isNew){
+ 	if(isNew){
 	    var roomName = prompt("What do you want the name to be?");
 	    createRoom(roomName);
 	    return;
@@ -334,14 +344,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	//Construct the room list
 	//XXXX this doesn't work yet
 	var roomList = "";
-	for(i in data.rooms){
-	  roomList=roomList+i+"\n";
+	for(i=0; i<data.numRooms; i=i+1){
+		roomList=roomList+data.rooms[i]+"\n";
 	}
-	//Prompt for a valid room
+	//Prompt for a valid room number
 	var room = "#X#X#X!!!#X#X#X";
-	//while(data.rooms.indexOf(room)==-1){
-	  room = prompt(roomList);
-	//}
+	while(data.rooms.indexOf(room)==-1){
+	  room = prompt("In which room would you like to play? \n"+
+			roomList);
+	}
 	isPlayer = confirm("Player?");
 	if(isPlayer){
 		joinRoom(room, "player");
@@ -349,12 +360,30 @@ document.addEventListener('DOMContentLoaded', function() {
 		joinRoom(room, "spectator");
 	}
     });
+    /* A function for the end of a game. It notifies the player of whether
+     he or she won/lost. */
+    socket.on("gameEnd", function(data){
+	resultString = "";
+	if(scoreLeft<scoreRight){
+	    if(paddleID == 0){
+		resultString = "You lost."
+	    }else{
+		resultString = "You won!"
+	    }
+	}else{
+	    if(paddleID == 0){
+		resultString = "You won!"
+	    }else{
+		resultString = "You lost."
+	    }
+	}
+	alert("The game is over. \n"+resultString);
+    });
     /* A function for alerting the client when a disconnect occurs. */
     socket.on("disconnect", function(data){
 	alert("You have been disconnected from the server!");
     });
     //alert the server of our player status
-    sendClientType('player');
 });
 
 /**
@@ -382,8 +411,8 @@ function updatePaddleToServer(position){
 };
 
 /**
- * Asks the user for some login information and stores it for submission to 
- * the server.
+ * Asks the user for some login information and stores it for submission 
+ * to the server.
  */
 function performAuthentication(){
     
