@@ -49,15 +49,14 @@ var PADDLEBOUNCE = 2;
 
 
 // Sounds
-var paddleBounceSound = new Media('sounds/paddlebounce.wav');
-var wallBounceSound = new Media('sounds/wallbounce.wav');
+//var paddleBounceSound = new Media('sounds/paddlebounce.wav');
+//var wallBounceSound = new Media('sounds/wallbounce.wav');
 
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
 function initClient(){
 	context = gameCanvas.getContext("2d");
-	//alert("I initialized");
 	context.canvas.width = window.innerWidth*(0.90);
 	context.canvas.height = window.innerHeight*(0.75);
 	screenModifierX = context.canvas.width/100;
@@ -337,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	//Check if the player wants to use an existing room
 	isNew = confirm("Do you want to create a new game room?");
-	if(isNew){
+ 	if(isNew){
 	    var roomName = prompt("What do you want the name to be?");
 	    createRoom(roomName);
 	    return;
@@ -345,14 +344,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	//Construct the room list
 	//XXXX this doesn't work yet
 	var roomList = "";
-	for(i in data.rooms){
-	  roomList=roomList+i+"\n";
+	for(i=0; i<data.numRooms; i=i+1){
+		roomList=roomList+data.rooms[i]+"\n";
 	}
-	//Prompt for a valid room
+	//Prompt for a valid room number
 	var room = "#X#X#X!!!#X#X#X";
-	//while(data.rooms.indexOf(room)==-1){
-	  room = prompt(roomList);
-	//}
+	while(data.rooms.indexOf(room)==-1){
+	  room = prompt("In which room would you like to play? \n"+
+			roomList);
+	}
 	isPlayer = confirm("Player?");
 	if(isPlayer){
 		joinRoom(room, "player");
@@ -360,12 +360,30 @@ document.addEventListener('DOMContentLoaded', function() {
 		joinRoom(room, "spectator");
 	}
     });
+    /* A function for the end of a game. It notifies the player of whether
+     he or she won/lost. */
+    socket.on("gameEnd", function(data){
+	resultString = "";
+	if(scoreLeft<scoreRight){
+	    if(paddleID == 0){
+		resultString = "You lost."
+	    }else{
+		resultString = "You won!"
+	    }
+	}else{
+	    if(paddleID == 0){
+		resultString = "You won!"
+	    }else{
+		resultString = "You lost."
+	    }
+	}
+	alert("The game is over. \n"+resultString);
+    });
     /* A function for alerting the client when a disconnect occurs. */
     socket.on("disconnect", function(data){
 	alert("You have been disconnected from the server!");
     });
     //alert the server of our player status
-    sendClientType('player');
 });
 
 /**
