@@ -223,12 +223,13 @@ function paddleBounceEvent(){
 **/
 function handleInputSelect(method){
     if(method == "keys"){
+	displaySelection("gameCanvas");
 	document.onkeydown = movePaddle;
     }if(method == "touchscreen"){
-	//DRAW THE BUTTONS
-	alert("You selected touchscreen.");
+	displaySelection("gameCanvasWithButtons");
     }if(method == "wii"){
 	alert("You selected Wii Remote.");
+	//display the select
 	document.onkeydown = movePaddle;
     }if(method == "localAccel"){
 	//XXXX Hook into the accelerometer stuff
@@ -257,26 +258,26 @@ function movePaddle(e) {
  */
 function changePaddlePosition(actualKey) {
     if(paddleID == 0){
-	if(actualKey == 'W'){ //check which key was pressed
-	    if(leftPad > 0){ 
-		// do nothing if it would move paddle out of frame
-		leftPad = leftPad - motionStep;
-	    }
-	}else if(actualKey == 'S'){
-	    if(leftPad < (gameY - paddleHeight)){
-	    	leftPad = leftPad + motionStep;
-	    }
-	}updatePaddleToServer(leftPad);
+    	if(actualKey == 'W'){ //check which key was pressed
+    		if(leftPad > 0){ 
+    			//do nothing if it would move paddle out of frame
+    			leftPad = leftPad - motionStep;
+    		}
+    	}else if(actualKey == 'S'){
+    		if(leftPad < (gameY - paddleHeight)){
+    			leftPad = leftPad + motionStep;
+    		}
+    	}updatePaddleToServer(leftPad);
 	}else{
 	    if(actualKey == 'W'){ //check which key was pressed
-		if(rightPad > 0){ 
-		    // do nothing if it would move paddle out of frame
-		    rightPad = rightPad - motionStep;
-		}
+	    	if(rightPad > 0){ 
+	    		// do nothing if it would move paddle out of frame
+	    		rightPad = rightPad - motionStep;
+	    	}
 	    }if(actualKey == 'S'){
-		if(rightPad < (gameY - paddleHeight)){
-		    rightPad = rightPad + motionStep;
-		}
+	    	if(rightPad < (gameY - paddleHeight)){
+	    		rightPad = rightPad + motionStep;
+	    	}
 	    }updatePaddleToServer(rightPad);
 	}		
 };	
@@ -424,9 +425,17 @@ function displaySelection(selection, options){
     var view = document.getElementById("view");
     if(selection == "gameCanvas"){
 	view.innerHTML = "<canvas id='gameCanvas' height='100' "+
+	    "width='100'></canvas><br /><a href='#' ";
+	initCanvas();
+    }if(selection == "gameCanvasWithButtons"){
+	view.innerHTML = "<canvas id='gameCanvas' height='100' "+
 	    "width='100'></canvas><br /><a href='#' "+
-	    "onClick='changePaddlePosition('W');'>Up</a>"+      
-	    "<a href='#' onClick='changePaddlePosition('S');'>Down</a>";
+	    "<a href=\"#\" onClick=\"changePaddlePosition('W');\"><img "+
+	    "src=\"graphics/uparrow-green.png\" style=\"position: absolute; "+
+	    "bottom: 5%; left: 5%;\"></a>"+	
+	    "<a href=\"#\" onClick=\"changePaddlePosition('S');\"><img "+
+	    "src=\"graphics/downarrow-green.png\" style=\"position: "+
+	    "absolute; bottom: 5%; right: 5%;\"></a>\"";
 	initCanvas();
     }else if(selection == "inputMethodSelection"){
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Select your input method.</h1>"+
