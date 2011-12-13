@@ -596,7 +596,7 @@ function displaySelection(selection, options){
 	//A screen for the game finishing.  Also takes care of some cleanup.
 	view.innerHTML = "<div id=\"mainWrapper\"><h1>The game is over.  You "+options+".</h1>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"location.reload(true)\" href=\"#\">Play again.</a>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a></div>";
+	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a>";
 	if(wiiFlag){
 	    alert("Prepare to disconnect your Wii Remote. (Select "+
 		  "your primary keyboard.");
