@@ -5,6 +5,7 @@
 
 //Local accel.
 var watchID;
+var updateFrequencyCounter = 0;
 
 //Username and password.
 var name;
@@ -206,13 +207,13 @@ function eventController(eventCode){
  * Performs actions related to the wall bounce event.
  */
 function wallBounceEvent(){
-    wallBounceSound.play();   
+    //wallBounceSound.play();   
 };
 /**
  * Performs actions related to the paddle bounce event.
  */
 function paddleBounceEvent(){
-    paddleBounceSound.play();
+   // paddleBounceSound.play();
 };
 
 
@@ -587,13 +588,11 @@ function displaySelection(selection, options){
 	    options;
     }else if(selection == "newRoom"){
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">What do you want to name "+
-	    "your game room?</h1><form name=\"roomName\" "+
-	    "id=\"pinEntry\"><!-- Room --><input type=\"text\" "+
+	    "your game room?</h1><!-- Room --><input type=\"text\" "+
 	    "value=\"\" name=\"userName\" id=\"roomName\" "+
 	    "onFocus=\"this.value=\"\"\" autocapitalize=\"off\" "+
 	    "autocorrect=\"off\" /><!-- Submit --><input type=\"button\" "+
-	    "value=\"Select Room\" id=\"selectRoom\" "+
-	    "onClick=\"handleNewRoom();\" /></form><br /></div>";
+	    "value=\"Select Room\" id=\"selectRoom\" onClick=\"handleNewRoom()\" /></form><br /></div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
 	view.innerHTML == "The game is over.  You "+options+"."+
@@ -612,6 +611,6 @@ function displaySelection(selection, options){
   * a new room to the server.
   */
 function handleNewRoom(){
-    var room = document.roomName.roomName.value;
+    var room = document.getElementById('roomName').value;
     createRoom(room);
 };
