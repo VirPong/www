@@ -3,6 +3,9 @@
  * server and the wiimote.
 */
 
+//Local accel.
+var watchID;
+
 //Username and password.
 var name;
 var pass;
@@ -238,9 +241,8 @@ function handleInputSelect(method){
 	window.KeySelect.showKeyBoards();
 	document.onkeydown = movePaddle;
     }if(method == "localAccel"){
+        setupLocalAccelerometer();
 	inputStyle = "gameCanvas";
-	//XXXX Hook into the accelerometer stuff
-	alert("You picked local accelerometer.");
     }
     connectToServer();
 };
@@ -474,4 +476,117 @@ function handleRoomSelect(){
 function handleNewRoom(){
     var room = document.roomName.roomName.value;
     createRoom(room);
+};
+
+function setupLocalAccelerometer() {
+  
+    // Set the frequency of refresh for Accelerometer data.
+    var options = { frequency: 50 };
+    
+    // Start watching accerlation and point to it with watchID.
+    watchID = navigator.accelerometer.watchAcceleration(onSuccess,
+                                                            onError,
+                                                            options);
+    
+};
+
+/*
+ * Contains the work done each time acceleration is audited. Right now,
+ * we display the raw data with a timestamp, as well as the calculated
+ * position, which is taken from the getPosition function.
+ * @param   acceleration    An object containing the current acceleration
+ *                          values. (x,y,z,timestamp).
+ */
+function onSuccess(acceleration)
+{ 
+    // Get paddlePosition from getPosition, round it to an integer
+    // scale it up and add the "px" to it so it can be injected
+    // into CSS styling for data visualization in paddle form.
+    updatePaddleToServer(Math.round(getPosition(acceleration)));
+    
+}
+
+/*
+ * Fires off an alert if there's an error in the collection of acceleration.
+ */
+function onError(acceleration) {
+    
+    alert('Error!');
+    
+};
+
+// Setup for calculating position.
+// These are basically a bunch of initial values.
+// Their nomenclature makes clear their purpose.
+var currentAcceleration = 0;
+var currentVelocity = 0;
+var currentPosition = 50;
+
+var previousAcceleration = 0;
+var previousVelocity = 0;
+var previousPosition = 0;
+
+// What to use as a frequency to calculate passing
+// of time between accelerometer data refreshes.
+var TIME = .3;
+
+/*
+ * Calculates the position of the "paddle" given accelerometer data from tilt-action.
+ * @param   acceleration    The acceleration data (x,y,z,timestamp).
+ * @return  int position    An integer from 0 to 100 representing position.
+ */
+function getPosition(acceleration) {
+    
+    // Invert acceleration for the sake of mapping the tilts
+    // in the correct direction.
+    currentAcceleration = -1*acceleration.y;
+    
+    // Double the acceleration for more usable data.
+    var virtualAcceleration = 2*currentAcceleration;
+    
+    // This detects if acceleration is in the opposite direction
+    // of velocity, such as when we're changing direction.
+    if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
+        
+        // Instead of doubling the acceleration, quadruple it.
+        // This makes the deceleration and change of direction
+        // happen much more quickly.
+        virtualAcceleration = currentAcceleration * 4;
+        
+    }
+    
+    // Add TIME * virtualAcceleration to the previous Velocity
+    // to update it to what is close to what the current Velocity
+    // would be.
+    currentVelocity = previousVelocity + (TIME * virtualAcceleration);
+    
+    // Find the midpoint between previous and current.
+    var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
+    
+    // Just as we did with the Velocity from Acceleration, do to Position
+    // from Velocity.
+    currentPosition = currentPosition + (TIME * averageVelocity);
+    previousPosition = currentPosition;
+    
+    // Set the currents to the previouses to prepare for the next cycle through this function.
+    previousVelocity = currentVelocity;
+    previousAcceleration = currentAcceleration;
+    
+    // Prevent us from going over 100 or under 0.
+    if(currentPosition>100) { currentPosition = 100; }
+    if(currentPosition<0) { currentPosition = 0; }
+    
+    // If we're at either end of the range, set acceleration and velocity
+    // to zero so that we immediately change direction.
+    if(currentPosition==0||currentPosition==100) 
+    { 
+        previousVelocity = 0;
+        previousAcceleration = 0;
+        currentVelocity = 0;
+        currentAcceleration = 0; 
+    }
+    
+    // Return our calculated position. 
+    return currentPosition;
+    
 };
