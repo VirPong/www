@@ -47,6 +47,9 @@ var NOEVENT = 0;
 var WALLBOUNCE = 1;
 var PADDLEBOUNCE = 2;
 
+// For the input method
+var inputStyle;
+
 
 // Sounds
 //var paddleBounceSound = new Media('sounds/paddlebounce.wav');
@@ -56,7 +59,8 @@ var PADDLEBOUNCE = 2;
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
 function initCanvas(){
-    context = gameCanvas.getContext("2d");
+    displaySelection(inputStyle);
+    context = document.getElementById('gameCanvas').getContext('2d');
     context.canvas.width = window.innerWidth*(0.90);
     context.canvas.height = window.innerHeight*(0.75);
     screenModifierX = context.canvas.width/100;
@@ -223,15 +227,18 @@ function paddleBounceEvent(){
 **/
 function handleInputSelect(method){
     if(method == "keys"){
-	displaySelection("gameCanvas");
+	inputStyle = "gameCanvas";
 	document.onkeydown = movePaddle;
     }if(method == "touchscreen"){
-	displaySelection("gameCanvasWithButtons");
+	inputStyle = "gameCanvasWithButtons"
     }if(method == "wii"){
 	alert("You selected Wii Remote.");
 	//display the select
+	inputStyle = "gameCanvas";
+	window.KeySelect.showKeyBoards();
 	document.onkeydown = movePaddle;
     }if(method == "localAccel"){
+	inputStyle = "gameCanvas";
 	//XXXX Hook into the accelerometer stuff
 	alert("You picked local accelerometer.");
     }
@@ -316,7 +323,7 @@ function connectToServer(){
 	    alert("You are the right paddle.");
 	}
 	paddleID = data.paddleID;
-	displaySelection("gameCanvas");
+	initCanvas();
     });
     /** Updates the state of the game (basically coordinates). */
     socket.on('gameState', function(data){
@@ -350,10 +357,10 @@ function connectToServer(){
 	//XXXX this doesn't work yet
 	var roomList = "";
 	for(i=0; i<data.numRooms; i=i+1){
-		roomList=roomList+"<a class='button' href='#' onclick='joinRoom("+data.rooms[i]+", 'player');'></a>";
+		roomList=roomList+"<a class=\"button\" onclick=\"joinRoom(\'"+data.rooms[i]+"\',\'player\');\">"+data.rooms[i]+"</a>";
 	}
 	//Prompt for a valid room number
-	displaySelection("newRoom?", roomList);
+	displaySelection("selectRoom", roomList);
 //	while(data.rooms.indexOf(room)==-1){
 	    
 //	  room = prompt("In which room would you like to play? \n"+
@@ -424,42 +431,36 @@ function performAuthentication(){
 function displaySelection(selection, options){
     var view = document.getElementById("view");
     if(selection == "gameCanvas"){
-	view.innerHTML = "<canvas id='gameCanvas' height='100' "+
-	    "width='100'></canvas><br /><a href='#' ";
-	initCanvas();
+	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
+	    "width=\"100\"></canvas><br />";
     }if(selection == "gameCanvasWithButtons"){
-	view.innerHTML = "<canvas id='gameCanvas' height='100' "+
-	    "width='100'></canvas><br /><a href='#' "+
+	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
+	    "width=\"100\"></canvas><br /><a href=\"#\" "+
 	    "<a href=\"#\" onClick=\"changePaddlePosition('W');\"><img "+
 	    "src=\"graphics/uparrow-green.png\" style=\"position: absolute; "+
 	    "bottom: 5%; left: 5%;\"></a>"+	
 	    "<a href=\"#\" onClick=\"changePaddlePosition('S');\"><img "+
 	    "src=\"graphics/downarrow-green.png\" style=\"position: "+
 	    "absolute; bottom: 5%; right: 5%;\"></a>\"";
-	initCanvas();
     }else if(selection == "inputMethodSelection"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Select your input method.</h1>"+
-	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
-	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
-	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('localAccel');\" href=\"#\">Local Accelerometer</a>"+
-	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a></div>";
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Select your input method.</h1>"+
+	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
+	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
+	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('localAccel');\" href=\"#\">Local Accelerometer</a>"+
+	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a></div>";
     }else if(selection == "selectRoom"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Room options:"+
-	    "</h1>"+options+"<br /></div>";
-    }else if(selection == "newRoom?"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Do you want to create a new room?</h1>"+
-	    "<a align='center' class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
-	    "<a align='center' class=\"button\" onclick=\"displaySelection('selectRoom',"+options+");\" href=\"#\">Select an existing room</a>";
+	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do you want to create a new room?</h1>"+
+	    "<a align=\"center\" class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
+	    options;
     }else if(selection == "newRoom"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>What do you want to name "+
-	    "your game room?</h1><form name='roomName' "+
-	    "id='pinEntry'><!-- Room --><input type='text' "+
-	    "value='' name='userName' id='roomName' "+
-	    "onFocus='this.value=''' autocapitalize='off' "+
-	    "autocorrect='off' /><!-- Submit --><input type='button' "+
-	    "value='Select Room' id='selectRoom' "+
-	    "onClick='handleNewRoom();' /></form><br /></div>";
-	    "should the name be?";
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">What do you want to name "+
+	    "your game room?</h1><form name=\"roomName\" "+
+	    "id=\"pinEntry\"><!-- Room --><input type=\"text\" "+
+	    "value=\"\" name=\"userName\" id=\"roomName\" "+
+	    "onFocus=\"this.value=\"\"\" autocapitalize=\"off\" "+
+	    "autocorrect=\"off\" /><!-- Submit --><input type=\"button\" "+
+	    "value=\"Select Room\" id=\"selectRoom\" "+
+	    "onClick=\"handleNewRoom();\" /></form><br /></div>";
     }else if(selection == "gameEnd"){
 	view.innerHTML == "The game is over.  You "+options+".";
     }
