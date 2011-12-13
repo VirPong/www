@@ -50,19 +50,21 @@ var NOEVENT = 0;
 var WALLBOUNCE = 1;
 var PADDLEBOUNCE = 2;
 
-// For the input method
-var inputStyle;
-
-
 // Sounds
 var paddleBounceSound = new Media("./sounds/paddlebounce.wav");
 var wallBounceSound = new Media("./sounds/wallbounce.wav");
+
+
+// Various flags 
+var fieldStyleFlag;
+var wiiFlag = false;
+
 
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
 function initCanvas(){
-    displaySelection(inputStyle);
+    displaySelection(fieldStyleFlag);
     context = document.getElementById('gameCanvas').getContext('2d');
     context.canvas.width = window.innerWidth*(0.90);
     context.canvas.height = window.innerHeight*(0.75);
@@ -230,19 +232,20 @@ function paddleBounceEvent(){
 **/
 function handleInputSelect(method){
     if(method == "keys"){
-	inputStyle = "gameCanvas";
+	fieldStyleFlag = "gameCanvas";
 	document.onkeydown = movePaddle;
     }if(method == "touchscreen"){
-	inputStyle = "gameCanvasWithButtons"
+	fieldStyleFlag = "gameCanvasWithButtons"
     }if(method == "wii"){
 	//display the select
-	inputStyle = "gameCanvas";
-//alert("Select VirPongIME in the next popup.");
-//window.KeySelect.showKeyBoards();
+	fieldStyleFlag = "gameCanvas";
+	alert("Select VirPongIME in the next popup.");
+	window.KeySelect.showKeyBoards();
 	document.onkeydown = movePaddle;
+	wiiFlag = true;
     }if(method == "localAccel"){
         setupLocalAccelerometer();
-	inputStyle = "gameCanvas";
+	fieldStyleFlag = "gameCanvas";
     }
     connectToServer();
 };
@@ -290,6 +293,122 @@ function changePaddlePosition(actualKey) {
 	    }updatePaddleToServer(rightPad);
 	}		
 };	
+
+
+
+function setupLocalAccelerometer() {
+  
+    // Set the frequency of refresh for Accelerometer data.
+    var options = { frequency: 50 };
+    
+    // Start watching accerlation and point to it with watchID.
+    watchID = navigator.accelerometer.watchAcceleration(onSuccess,
+                                                            onError,
+                                                            options);
+    
+};
+
+/*
+ * Contains the work done each time acceleration is audited. Right now,
+ * we display the raw data with a timestamp, as well as the calculated
+ * position, which is taken from the getPosition function.
+ * @param   acceleration    An object containing the current acceleration
+ *                          values. (x,y,z,timestamp).
+ */
+function onSuccess(acceleration)
+{ 
+    // Get paddlePosition from getPosition, round it to an integer
+    // scale it up and add the "px" to it so it can be injected
+    // into CSS styling for data visualization in paddle form.
+    updatePaddleToServer(Math.round(getPosition(acceleration)));
+    
+}
+
+/*
+ * Fires off an alert if there's an error in the collection of acceleration.
+ */
+function onError(acceleration) {
+    
+    alert('Error!');
+    
+};
+
+// Setup for calculating position.
+// These are basically a bunch of initial values.
+// Their nomenclature makes clear their purpose.
+var currentAcceleration = 0;
+var currentVelocity = 0;
+var currentPosition = 50;
+
+var previousAcceleration = 0;
+var previousVelocity = 0;
+var previousPosition = 0;
+
+// What to use as a frequency to calculate passing
+// of time between accelerometer data refreshes.
+var TIME = .3;
+
+/*
+ * Calculates the position of the "paddle" given accelerometer data from tilt-action.
+ * @param   acceleration    The acceleration data (x,y,z,timestamp).
+ * @return  int position    An integer from 0 to 100 representing position.
+ */
+function getPosition(acceleration) {
+    
+    // Invert acceleration for the sake of mapping the tilts
+    // in the correct direction.
+    currentAcceleration = -1*acceleration.y;
+    
+    // Double the acceleration for more usable data.
+    var virtualAcceleration = 2*currentAcceleration;
+    
+    // This detects if acceleration is in the opposite direction
+    // of velocity, such as when we're changing direction.
+    if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
+        
+        // Instead of doubling the acceleration, quadruple it.
+        // This makes the deceleration and change of direction
+        // happen much more quickly.
+        virtualAcceleration = currentAcceleration * 4;
+        
+    }
+    
+    // Add TIME * virtualAcceleration to the previous Velocity
+    // to update it to what is close to what the current Velocity
+    // would be.
+    currentVelocity = previousVelocity + (TIME * virtualAcceleration);
+    
+    // Find the midpoint between previous and current.
+    var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
+    
+    // Just as we did with the Velocity from Acceleration, do to Position
+    // from Velocity.
+    currentPosition = currentPosition + (TIME * averageVelocity);
+    previousPosition = currentPosition;
+    
+    // Set the currents to the previouses to prepare for the next cycle through this function.
+    previousVelocity = currentVelocity;
+    previousAcceleration = currentAcceleration;
+    
+    // Prevent us from going over 100 or under 0.
+    if(currentPosition>100) { currentPosition = 100; }
+    if(currentPosition<0) { currentPosition = 0; }
+    
+    // If we're at either end of the range, set acceleration and velocity
+    // to zero so that we immediately change direction.
+    if(currentPosition==0||currentPosition==100) 
+    { 
+        previousVelocity = 0;
+        previousAcceleration = 0;
+        currentVelocity = 0;
+        currentAcceleration = 0; 
+    }
+    
+    // Return our calculated position. 
+    return currentPosition;
+    
+};
+
 
 
 //========================================================================
@@ -421,21 +540,28 @@ function updatePaddleToServer(position){
 };
 
 /**
- * Asks the user for some login information and stores it for submission 
- * to the server.
+ * Loads in login information from local storage to send to the server.
  */
 function performAuthentication(){
     var username = localStorage.getItem("username");
     var pin = localStorage.getItem("pin");
 };
 
-
+/**
+ * Serves as a filter for various display options.  Game canvases,
+ * buttons, input options, and even game end screens are initialized here.
+ *@param {selection} a string representing the desired display: gameCanvas, 
+ *	gameCanvasWithButtons, inputMethodSelection, selectRoom, newRoom, or gameEnd
+ *@param {options} any of various options that go with {selection}
+ */
 function displaySelection(selection, options){
     var view = document.getElementById("view");
     if(selection == "gameCanvas"){
+	//A game canvas with no buttons
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br />";
     }if(selection == "gameCanvasWithButtons"){
+	//A game canvas with arrow buttons, very nice
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br /><a href=\"#\" "+
 	    "<a href=\"#\" onClick=\"changePaddlePosition('W');\"><img "+
@@ -445,6 +571,7 @@ function displaySelection(selection, options){
 	    "src=\"graphics/downarrow-green.png\" style=\"position: "+
 	    "absolute; bottom: 5%; right: 5%;\"></a>\"";
     }else if(selection == "inputMethodSelection"){
+	//A screen for selecting input methods
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Select your input method.</h1>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
@@ -454,6 +581,7 @@ function displaySelection(selection, options){
 	    "detect your device.  So, please don't select an input method your device doesn't support.  Refer to the VirPong"+
 	    " website for more information.</p>";
     }else if(selection == "selectRoom"){
+	//A screen for selecting a room, new or existing
 	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do you want to create a new room?</h1>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
 	    options;
@@ -467,129 +595,23 @@ function displaySelection(selection, options){
 	    "value=\"Select Room\" id=\"selectRoom\" "+
 	    "onClick=\"handleNewRoom();\" /></form><br /></div>";
     }else if(selection == "gameEnd"){
-	view.innerHTML == "The game is over.  You "+options+".";
+	//A screen for the game finishing.  Also takes care of some cleanup.
+	view.innerHTML == "The game is over.  You "+options+"."+
+	    "<a align=\"center\" class=\"button\" onclick=\"location.reload(true)\" href=\"#\">Play again.</a>"+
+	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a>";
+	if(wiiFlag){
+	    alert("Prepare to disconnect your Wii Remote. (Select "+
+		  "your primary keyboard.");
+	    window.KeySelect.showKeyBoards();
+	}
     }
 };
 
-function handleRoomSelect(){
-    var room = document.roomSelection.roomSelection.value;
-    joinRoom(room, "player");
-};
-
+/**
+  * Grabs the room name from an element roomName.roomName and submits it as 
+  * a new room to the server.
+  */
 function handleNewRoom(){
     var room = document.roomName.roomName.value;
     createRoom(room);
-};
-
-function setupLocalAccelerometer() {
-  
-    // Set the frequency of refresh for Accelerometer data.
-    var options = { frequency: 50 };
-    
-    // Start watching accerlation and point to it with watchID.
-    watchID = navigator.accelerometer.watchAcceleration(onSuccess,
-                                                            onError,
-                                                            options);
-    
-};
-
-/*
- * Contains the work done each time acceleration is audited. Right now,
- * we display the raw data with a timestamp, as well as the calculated
- * position, which is taken from the getPosition function.
- * @param   acceleration    An object containing the current acceleration
- *                          values. (x,y,z,timestamp).
- */
-function onSuccess(acceleration)
-{ 
-    // Get paddlePosition from getPosition, round it to an integer
-    // scale it up and add the "px" to it so it can be injected
-    // into CSS styling for data visualization in paddle form.
-    updatePaddleToServer(Math.round(getPosition(acceleration)));
-    
-}
-
-/*
- * Fires off an alert if there's an error in the collection of acceleration.
- */
-function onError(acceleration) {
-    
-    alert('Error!');
-    
-};
-
-// Setup for calculating position.
-// These are basically a bunch of initial values.
-// Their nomenclature makes clear their purpose.
-var currentAcceleration = 0;
-var currentVelocity = 0;
-var currentPosition = 50;
-
-var previousAcceleration = 0;
-var previousVelocity = 0;
-var previousPosition = 0;
-
-// What to use as a frequency to calculate passing
-// of time between accelerometer data refreshes.
-var TIME = .3;
-
-/*
- * Calculates the position of the "paddle" given accelerometer data from tilt-action.
- * @param   acceleration    The acceleration data (x,y,z,timestamp).
- * @return  int position    An integer from 0 to 100 representing position.
- */
-function getPosition(acceleration) {
-    
-    // Invert acceleration for the sake of mapping the tilts
-    // in the correct direction.
-    currentAcceleration = -1*acceleration.y;
-    
-    // Double the acceleration for more usable data.
-    var virtualAcceleration = 2*currentAcceleration;
-    
-    // This detects if acceleration is in the opposite direction
-    // of velocity, such as when we're changing direction.
-    if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
-        
-        // Instead of doubling the acceleration, quadruple it.
-        // This makes the deceleration and change of direction
-        // happen much more quickly.
-        virtualAcceleration = currentAcceleration * 4;
-        
-    }
-    
-    // Add TIME * virtualAcceleration to the previous Velocity
-    // to update it to what is close to what the current Velocity
-    // would be.
-    currentVelocity = previousVelocity + (TIME * virtualAcceleration);
-    
-    // Find the midpoint between previous and current.
-    var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
-    
-    // Just as we did with the Velocity from Acceleration, do to Position
-    // from Velocity.
-    currentPosition = currentPosition + (TIME * averageVelocity);
-    previousPosition = currentPosition;
-    
-    // Set the currents to the previouses to prepare for the next cycle through this function.
-    previousVelocity = currentVelocity;
-    previousAcceleration = currentAcceleration;
-    
-    // Prevent us from going over 100 or under 0.
-    if(currentPosition>100) { currentPosition = 100; }
-    if(currentPosition<0) { currentPosition = 0; }
-    
-    // If we're at either end of the range, set acceleration and velocity
-    // to zero so that we immediately change direction.
-    if(currentPosition==0||currentPosition==100) 
-    { 
-        previousVelocity = 0;
-        previousAcceleration = 0;
-        currentVelocity = 0;
-        currentAcceleration = 0; 
-    }
-    
-    // Return our calculated position. 
-    return currentPosition;
-    
 };
