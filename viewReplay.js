@@ -579,10 +579,6 @@ function connectToServer(){
     socket.on("disconnect", function(data){
 	alert("You have been disconnected from the server! You will"+
 	      " be returned to the previous page.");
-	if(wiiFlag){
-	    alert("You should now select your regular input method.");
-	    window.KeySelect.showKeyBoards();
-	}
 	history.go(-1);
     });
     //alert the server of our player status
@@ -635,27 +631,6 @@ function displaySelection(selection, options){
 	//A game canvas with no buttons
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br />";
-    }if(selection == "gameCanvasWithButtons"){
-	//A game canvas with arrow buttons, very nice
-	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
-	    "width=\"100\"></canvas><br /><a href=\"#\" "+
-	    "<a href=\"#\" onClick=\"changePaddlePosition('W');\"><img "+
-	    "src=\"graphics/uparrow-green.png\" style=\"position: absolute; "+
-	    "bottom: 5%; left: 5%;\"></a>"+	
-	    "<a href=\"#\" onClick=\"changePaddlePosition('S');\"><img "+
-	    "src=\"graphics/downarrow-green.png\" style=\"position: "+
-	    "absolute; bottom: 5%; right: 5%;\"></a>\"";
-    }else if(selection == "inputMethodSelection"){
-	//A screen for selecting input methods
-	view.innerHTML = detectViableInputMethods() +
-	    "<p style=\"color:white\" align=\"center\">Disclaimer: At the time of this writing, the gods of computing have not made it possible to automagically "+
-	    "detect your device.  So, please don't select an input method your device doesn't support.  Refer to the VirPong"+
-	    " website for more information.</p>";
-    }else if(selection == "selectRoom"){
-	//A screen for selecting a room, new or existing
-	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do you want to create a new room?</h1>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
-	    options;
     }else if(selection == "newRoom"){
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">What do you want to name "+
 	    "your game room?</h1><!-- Room --><input type=\"text\" "+
@@ -665,14 +640,8 @@ function displaySelection(selection, options){
 	    "value=\"Select Room\" id=\"selectRoom\" onClick=\"handleNewRoom()\" /></form><br /></div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
-	view.innerHTML == "The game is over.  You "+options+"."+
-	    "<a align=\"center\" class=\"button\" onclick=\"location.reload(true)\" href=\"#\">Play again.</a>"+
+	view.innerHTML == "The game is over."+
 	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a>";
-	if(wiiFlag){
-	    alert("Prepare to disconnect your Wii Remote. (Select "+
-		  "your primary keyboard.");
-	    window.KeySelect.showKeyBoards();
-	}
     }
 };
 
