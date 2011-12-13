@@ -584,7 +584,7 @@ function displaySelection(selection, options){
 	//A screen for selecting a room, new or existing
 	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do you want to create a new room?</h1>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
-	    options;
+	    options+"</div>";
     }else if(selection == "newRoom"){
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">What do you want to name "+
 	    "your game room?</h1><!-- Room --><input type=\"text\" "+
@@ -594,9 +594,9 @@ function displaySelection(selection, options){
 	    "value=\"Select Room\" id=\"selectRoom\" onClick=\"handleNewRoom()\" /></form><br /></div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
-	view.innerHTML == "The game is over.  You "+options+"."+
+	view.innerHTML = "<div id=\"mainWrapper\"><h1>The game is over.  You "+options+".</h1>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"location.reload(true)\" href=\"#\">Play again.</a>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a>";
+	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a></div>";
 	if(wiiFlag){
 	    alert("Prepare to disconnect your Wii Remote. (Select "+
 		  "your primary keyboard.");

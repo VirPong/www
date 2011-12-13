@@ -71,7 +71,6 @@ var authLooping = false;
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
 function initCanvas(){
-    displaySelection(fieldStyleFlag);
     context = document.getElementById('gameCanvas').getContext('2d');
     context.canvas.width = window.innerWidth*(0.90);
     context.canvas.height = window.innerHeight*(0.75);
@@ -237,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of 
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
-    displaySelection("inputMethodSelection");
+    connectToServer();
 });
 
 function connectToServer(){	
@@ -254,14 +253,14 @@ function connectToServer(){
 	palyerTwoName = data.names[1];
     });
     /** Updates the state of the game (basically coordinates). */
-    socket.on('gameState', function(data){
+    socket.on('replayInfo', function(data){
 	//expecting arrays for paddle1, paddle2, ballPos
-        leftPad = data.paddle[0];
-        rightPad= data.paddle[1];
-        xBall = data.ball[0];
-        yBall = data.ball[1];
-	scoreLeft = data.scores[0];
-	scoreRight = data.score[1];
+        leftPad = data.docs.paddle[0];
+        rightPad= data.docs.paddle[1];
+        xBall = data.docs.ball[0];
+        yBall = data.docs.ball[1];
+	scoreLeft = data.docs.scores[0];
+	scoreRight = data.docs.score[1];
 	draw();
     });
     socket.on('scoreUpdate', function(data){
@@ -276,13 +275,7 @@ function connectToServer(){
 	for(i=0; i<data.names.length; i=i+1){
 		gameList=gameList+"<a class=\"button\" onclick=\"viewGame(\'"+data.names[i]+"\');\">"+data.names[i]+"</a>";
 	}
-	//Prompt for a valid room number
 	displaySelection("selectGame", gameList);
-//	while(data.rooms.indexOf(room)==-1){
-	    
-//	  room = prompt("In which room would you like to play? \n"+
-//			gameList);
-//	}
     });
     /* A function for the end of a game. It notifies the player of whether
      he or she won/lost. */
@@ -317,6 +310,7 @@ function connectToServer(){
  *@param clientType player or spectator as a string
  */
 function viewGame(gameName){
+    displaySelection("gameCanvas");
     socket.emit('watchGame', {game: gameName});
 };
 
@@ -358,9 +352,10 @@ function displaySelection(selection, options){
 	//A game canvas with no buttons
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br />";
-    }else if(selection == "gameSelect"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Which game do you want to view?"+
-	    options;
+	initCanvas();
+    }else if(selection == "selectGame"){
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Which game do you want to view?</h1>"+
+	    options+"</div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
 	view.innerHTML == "The game is over."+
