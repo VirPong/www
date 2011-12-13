@@ -52,8 +52,8 @@ var WALLBOUNCE = 1;
 var PADDLEBOUNCE = 2;
 
 // Sounds
-var paddleBounceSound = new Media("./sounds/paddlebounce.wav");
-var wallBounceSound = new Media("./sounds/wallbounce.wav");
+//var paddleBounceSound = new Media("./sounds/paddlebounce.wav");
+//var wallBounceSound = new Media("./sounds/wallbounce.wav");
 
 
 // Various flags 
@@ -176,10 +176,10 @@ function drawBall(){
  */
 function drawScore(){
     var score;
+    
     score = String(scoreLeft);
     context.fillText('P1: ' + score, gameX*screenModifierX/5, 10);
     
-    var score;
     score = String(scoreRight);
     context.fillText('P2: ' + score, 2.5*gameX*screenModifierX/4,10);
 };	
@@ -195,7 +195,7 @@ function drawScore(){
  * Performs actions related to the wall bounce event.
  */
 function eventController(eventCode){
-    if(eventCode == NOEVENT);
+    if(eventCode == NOEVENT) {}
     if(eventCode == PADDLEBOUNCE){
         paddleBounceEvent();
     }
@@ -295,6 +295,48 @@ function changePaddlePosition(actualKey) {
 	}		
 };	
 
+function detectViableInputMethods() {
+      
+    /*  Figure out what platform we're running on, return the correct choices for input selection. */
+    
+    var userAgent = navigator.userAgent;
+    // var thePlatform;
+    
+    var theReturn = "<div id=\"mainWrapper\"><h1 align=\"center\">Select your input method.</h1>";
+    
+    if((userAgent.indexOf("iPad")!=-1)||(userAgent.indexOf("iPhone")!=-1)||(userAgent.indexOf("iPod")!=-1)) {
+        
+        // iOS device, so we get touchscreen buttons, accelerometer, and Wii Remote.
+        // thePlatform = "iOS";
+        theReturn = theReturn + "<a class=\"button\" onclick=\"handleInputSelect('touchscreen');\">Touchscreen Buttons</a>" + 
+        "<a class=\"button\" onclick=\"handleInputSelect('localAccel');\">Local Accelerometer</a>"+
+        "<a class=\"button\" onclick=\"handleInputSelect('wii');\">Wii Remote</a>";
+
+        
+    }   else if((userAgent.indexOf("Android")!=-1)) {
+         
+        // Android device, so we get touchscreen buttons, keyboard input, and Wii Remote.
+        //thePlatform = "android";
+         theReturn = theReturn +     "<a class=\"button\" onclick=\"handleInputSelect('keys');\">Keyboard</a>" +
+         "<a class=\"button\" onclick=\"handleInputSelect('touchscreen');\">Touchscreen Buttons</a>" + 
+         "<a class=\"button\" onclick=\"handleInputSelect('localAccel');\">Local Accelerometer</a>" +
+         "<a class=\"button\" onclick=\"handleInputSelect('wii');\">Wii Remote</a>";
+        
+    }  else {
+         
+         // Browser, so we get onscreen buttons and keyboard.
+         //thePlatform = "browser";
+         
+         theReturn = theReturn + "<a class=\"button\" onclick=\"handleInputSelect('keys');\">Keyboard</a>"+
+         "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('touchscreen');\">On-Screen Buttons</a>";
+         
+     }
+    
+    theReturn = theReturn + "</div>";
+    
+    return theReturn;
+    
+};
 
 
 function setupLocalAccelerometer() {
@@ -427,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
     displaySelection("inputMethodSelection");
-    performAuthentication();
+    //performAuthentication();
 });
 
 function connectToServer(){	
@@ -556,6 +598,7 @@ function performAuthentication(){
  *@param {options} any of various options that go with {selection}
  */
 function displaySelection(selection, options){
+    
     var view = document.getElementById("view");
     if(selection == "gameCanvas"){
 	//A game canvas with no buttons
@@ -573,11 +616,7 @@ function displaySelection(selection, options){
 	    "absolute; bottom: 5%; right: 5%;\"></a>\"";
     }else if(selection == "inputMethodSelection"){
 	//A screen for selecting input methods
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Select your input method.</h1>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('localAccel');\" href=\"#\">Local Accelerometer</a>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a></div>"+
+	view.innerHTML = detectViableInputMethods() +
 	    "<p style=\"color:white\" align=\"center\">Disclaimer: At the time of this writing, the gods of computing have not made it possible to automagically "+
 	    "detect your device.  So, please don't select an input method your device doesn't support.  Refer to the VirPong"+
 	    " website for more information.</p>";

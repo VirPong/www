@@ -21,8 +21,7 @@
         <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />			
         
         <!-- Include PhoneGap! -->
-        <!--<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>-->
-        <script type="text/javascript" charset="utf-8" src="phonegapSourceChooser.js"></script>
+        <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0-iOS.js"></script>
 
         
         <!-- Some basic JS for this document. -->
@@ -130,32 +129,27 @@
         <!-- Main page wrapper -->
         <div id="mainWrapper">
             
-            <!-- Display logo -->
-            <div id="logo"></div>
-            
-            <br />
-            
+            <center>
             <!-- Displyay pinEntry form. -->
             <form name="pinEntry" id="pinEntry">
-                <h1>Username</h1>
+                
+                <div style="font-size: 18pt;">U/N:</div>
                 <!-- Username -->
                 <input type="text" value="" name="userName" id="userName" onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
-                <h1>PIN</h1>
+                
+                <div style="font-size: 18pt;">PIN:</div>
                 <!-- PIN -->
                 <input type="password" value="" name="userPIN" id="userPIN" onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
                 
+                <br />
                 <!-- Submit -->
-                <input type="button" value="Log In" id="logIn" onClick="handleForm()" />
-                
+                <a class="button" value="Log In" id="logIn" onClick="handleForm()">Save & Go To Game</a>
+                <a class="button" href="javascript:window.localStorage.clear(); window.location.reload();">Clear Username/PIN</a>
                 
             </form>
-            
+            </center>
             <br />
-            
-            <!-- For debugging purposes, to clear any locally-stored logins.--> 
-            <!-- This will be moved to settings as an actual UI element eventually.-->
-            <a href="javascript:window.localStorage.clear(); window.location.reload();">CLEAR LOCAL STORAGE</a>
-            
+                        
             <!-- Display footer. -->
             <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
                 
