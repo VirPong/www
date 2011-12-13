@@ -427,17 +427,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
     displaySelection("inputMethodSelection");
-    performAuthentication();
 });
 
 function connectToServer(){	
-    //try{
-	socket = io.connect("10.150.1.204:3000");
-   //}catch(err){
-   //	alert("There was an error connecting to the server."+
-   //	     " Returning to the previous page.");
-   //	history.go(-1);
-   //}
+    try{
+   	socket = io.connect("10.150.1.204:3000");
+    }catch(err){
+   	alert("There was an error connecting to the server."+
+   	     " Returning to the previous page.");
+   	history.go(-1);
+    }
+    performAuthentication();
+    /* A failed authentication event. */
+    socket.on("authFailed", function(data){
+	isGuest = confirm("Your login failed.  Would you like to proceed as a guest?");
+	if(isGuest){
+	    socket.emit("auth", {username: "guest", password: "0000"});
+	}else{
+	    alert("You will now be returned to the previous page.");
+	    history.go(-1);
+	}
+    });
+    /* A successful authentication event. */
+    socket.on("authGranted", function(data){
+	//Nothing needed to be done
+    });
+    /* Tells us which paddle we are. */
     socket.on('paddleID', function(data){
 	if(data.paddleID == 0){
 	    alert("You are the left paddle.");
@@ -511,6 +526,10 @@ function connectToServer(){
     socket.on("disconnect", function(data){
 	alert("You have been disconnected from the server! You will"+
 	      " be returned to the previous page.");
+	if(wiiFlag){
+	    alert("You should now select your regular input method.");
+	    window.KeySelect.showKeyBoards();
+	}
 	history.go(-1);
     });
     //alert the server of our player status
@@ -532,6 +551,7 @@ function joinRoom(room, clientType){
 function createRoom(roomName){
     socket.emit('createRoom', {name: roomName});
 };
+
 /**
  * Update our paddle position with the server.
  * @param {position} the new position of the paddle
@@ -546,6 +566,7 @@ function updatePaddleToServer(position){
 function performAuthentication(){
     var username = localStorage.getItem("username");
     var pin = localStorage.getItem("pin");
+    socket.emit("auth", {username: username, password: pin});
 };
 
 /**
