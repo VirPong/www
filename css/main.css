@@ -156,6 +156,7 @@ form#pinEntry {
     width: 300px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
     
 }
 
@@ -173,8 +174,8 @@ input#userName, input#userPIN {
     text-align: center;
     
     margin-right: auto;
-    margin-left auto;
-    margin-bottom: auto;
+    margin-left: auto;
+/*    margin-bottom: auto; */
 
     font-size: 30px;
 
@@ -183,27 +184,18 @@ input#userName, input#userPIN {
 }
 
 /*
- * Override the "auto" bottom margin and make it exactly 20px.
- */
-input#userName { 
-
-    margin-bottom: 20px;
-
-}
-
-/*
  * Login button.
  *  - Give it 20px of margin at the top
  */
 input#logIn {
 
-    margin-top: 20px;
+    margin-top: 10px;
 
 }
 
 h2 {
 	font-size: 1em;
-	color: #FFFFFF;
+	color: #101010;
 	margin: .1em;
 	padding: 3em;
 }
@@ -211,7 +203,7 @@ h2 {
 
 h3 {
 	font-size: .8em;
-	color: #FFFFFF;
+	color: #101010;
 	margin: .1em;
 	padding: .5em;
 }

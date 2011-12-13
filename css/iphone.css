@@ -50,7 +50,13 @@ a.topBarButton {
 
 form#pinEntry {
     
-    width: 90%;
+    width: 100%;
+    
+}
+
+form#pinEntry div {
+    
+    display: inline-block;
     
 }
 
