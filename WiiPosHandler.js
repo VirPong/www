@@ -23,7 +23,7 @@ nativeFunction: function(types, success, fail) {
 };
 
 
-function getPosition()
+function wiiGetPosition()
 {
     WiiPosition.nativeFunction(
                                [storedPosition] ,
@@ -36,7 +36,7 @@ function getPosition()
                                }
                                );
 }
-function connect()
+function wiiConnect()
 {
     WiiConnect.nativeFunction(
                               [storedPosition] ,
@@ -45,11 +45,12 @@ function connect()
                               //alert("Success : \r\n"+result);
                               },
                               function(error) {
+                              //alert("FUCK");
                               alert("Error : \r\n"+error);
                               }
                               );
 }
-function disconnect()
+function wiiDisconnect()
 {
     WiiDisconnect.nativeFunction(
                                  [storedPosition] ,

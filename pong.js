@@ -250,6 +250,12 @@ function handleInputSelect(method){
 	window.KeySelect.showKeyBoards();
 	document.onkeydown = movePaddle;
 	wiiFlag = true;
+    }else if(method == "appleWii") {
+        fieldStyleFlag = "gameCanvas";
+        //alert("I hope you connected to the WiiMote already!");
+//        setInterval(updateWiiPosition(), 100);
+        wiiFlag = true;
+        setupLocalAccelerometer();
     }else if(method == "localAccel"){
         setupLocalAccelerometer();
 	fieldStyleFlag = "gameCanvas";
@@ -301,6 +307,13 @@ function changePaddlePosition(actualKey) {
 	}		
 };	
 
+function updateWiiPosition() {
+    
+    wiiGetPosition();
+    updatePaddleToServer(storedPosition);
+    
+}
+
 function detectViableInputMethods() {
       
     /*  Figure out what platform we're running on, return the correct choices for input selection. */
@@ -316,7 +329,7 @@ function detectViableInputMethods() {
         // thePlatform = "iOS";
         theReturn = theReturn + "<a class=\"button\" onclick=\"handleInputSelect('touchscreen');\">Touchscreen Buttons</a>" + 
         "<a class=\"button\" onclick=\"handleInputSelect('localAccel');\">Local Accelerometer</a>"+
-        "<a class=\"button\" onclick=\"handleInputSelect('wii');\">Wii Remote</a>";
+        "<a class=\"button\" onclick=\"handleInputSelect('appleWii');\">Wii Remote</a>";
 
         
     } else if((userAgent.indexOf("Android")!=-1)) {
@@ -361,6 +374,12 @@ function setupLocalAccelerometer() {
 function onSuccess(acceleration)
 { 
     
+    if(wiiFlag) {
+        
+        updateWiiPosition();
+        
+    } else {
+        
     if(acceleration.x<-.2) {
         
         changePaddlePosition("S");
@@ -368,6 +387,8 @@ function onSuccess(acceleration)
     } else if(acceleration.x>.2) {
         
         changePaddlePosition("W");
+        
+    }
         
     }
     
@@ -402,6 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function connectToServer(){	
     try{
+    //    alert("Trying Servor!");
    	socket = io.connect("10.150.1.204:3000"); 
     }catch(err){
    	alert("There was an error connecting to the server."+
@@ -442,7 +464,7 @@ function connectToServer(){
     /* Retrievs the user names */
     socket.on("gameInfo", function(data){
 	playerOneName = data.names[0];
-	palyerTwoName = data.names[1];
+	playerTwoName = data.names[1];
     });
     /** Updates the state of the game (basically coordinates). */
     socket.on('gameState', function(data){
