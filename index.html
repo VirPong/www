@@ -22,6 +22,7 @@
     
     <!-- Include PhoneGap! -->
     <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0-iOS.js"></script>
+      <script type="text/javascript" charset="utf-8" src="WiiPosHandler.js"></script>
         
     <!-- Some basic JS for this document. -->
     <script type="text/javascript">
@@ -72,7 +73,10 @@
       <!-- Our big blue buttons! -->
       <a class="button" href="playGame.html">Play Game</a>
       <a class="button" href="settings.html">Settings</a>
-      <br />
+      <a class="button" onclick="connect()">Connect</a>
+      <a class="button" onclick="disconnect()">Disconnect</a>
+      <a class="button" onclick="getPosition()">Position</a>
+        <br />
       
       <!-- Small footer text. -->
       <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserved.</span>
