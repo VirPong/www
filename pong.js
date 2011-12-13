@@ -235,16 +235,16 @@ function handleInputSelect(method){
     if(method == "keys"){
 	fieldStyleFlag = "gameCanvas";
 	document.onkeydown = movePaddle;
-    }if(method == "touchscreen"){
+    }else if(method == "touchscreen"){
 	fieldStyleFlag = "gameCanvasWithButtons"
-    }if(method == "wii"){
+    }else if(method == "wii"){
 	//display the select
 	fieldStyleFlag = "gameCanvas";
 	alert("Select VirPongIME in the next popup.");
 	window.KeySelect.showKeyBoards();
 	document.onkeydown = movePaddle;
 	wiiFlag = true;
-    }if(method == "localAccel"){
+    }else if(method == "localAccel"){
         setupLocalAccelerometer();
 	fieldStyleFlag = "gameCanvas";
     }
@@ -469,7 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
     displaySelection("inputMethodSelection");
-    //performAuthentication();
 });
 
 function connectToServer(){	
