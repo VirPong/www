@@ -242,43 +242,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function connectToServer(){	
     try{
-   	socket = io.connect("10.150.1.204:3000"); 
+   	socket = io.connect("10.150.1.204:3001"); 
     }catch(err){
    	alert("There was an error connecting to the server."+
    	     " Returning to the previous page.");
    	history.go(-1);
     }
-    socket.emit("gameListRequest");
-    /* A failed authentication event. */
-    socket.on("authFailed", function(data){
-	if(authLooping){
-	    alert("Login is not working.  The server may be down.  We'll "+
-		  "take you back home now.");
-	    window.navigate("index.html");
-	}
-	isGuest = confirm("Your login failed.  Would you like to proceed as a guest?");
-	if(isGuest){
-	    authLooping = true;
-	    socket.emit("auth", {username: "guest", password: "0000"});
-	}else{
-	    alert("You will now be returned to the previous page.");
-	    history.go(-1);
-	}
-    });
-    /* A successful authentication event. */
-    socket.on("authGranted", function(data){
-	authLooping = false;
-    });
-    /* Tells us which paddle we are. */
-    socket.on('paddleID', function(data){
-	if(data.paddleID == 0){
-	    alert("You are the left paddle.");
-	}else{
-	    alert("You are the right paddle.");
-	}
-	paddleID = data.paddleID;
-	initCanvas();
-    });
     /* Retrievs the user names */
     socket.on("gameInfo", function(data){
 	playerOneName = data.names[0];
@@ -291,8 +260,9 @@ function connectToServer(){
         rightPad= data.paddle[1];
         xBall = data.ball[0];
         yBall = data.ball[1];
-        eventController(data.gameEvent); // eventController executes events
-        draw();
+	scoreLeft = data.scores[0];
+	scoreRight = data.score[1];
+	draw();
     });
     socket.on('scoreUpdate', function(data){
 	scoreLeft = data.score[0];
@@ -301,10 +271,10 @@ function connectToServer(){
     /**When the server sends a room list, the player can pick a room or
        start a new one
        */
-    socket.on('gameList', function(data){
+    socket.on('games', function(data){
 	var gameList = "";
-	for(i=0; i<data.numRooms; i=i+1){
-		gameList=gameList+"<a class=\"button\" onclick=\"viewGame(\'"+data.rooms[i]+"\');\">"+data.rooms[i]+"</a>";
+	for(i=0; i<data.names.length; i=i+1){
+		gameList=gameList+"<a class=\"button\" onclick=\"viewGame(\'"+data.names[i]+"\');\">"+data.names[i]+"</a>";
 	}
 	//Prompt for a valid room number
 	displaySelection("selectGame", gameList);
@@ -347,7 +317,7 @@ function connectToServer(){
  *@param clientType player or spectator as a string
  */
 function viewGame(gameName){
-    socket.emit('viewGame', {game: gameName});
+    socket.emit('watchGame', {game: gameName});
 };
 
 /**
