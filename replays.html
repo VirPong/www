@@ -31,36 +31,11 @@
 	  href="css/iphone.css" type="text/css" />		
     
     <!-- Include PhoneGap, Socket.IO, and our pong.js -->
-    <script type="text/javascript" charset="utf-8" src="http://10.150.1.204:3000/socket.io/socket.io.js"></script>
-    <script type="text/javascript" charset="utf-8" src="pong.js"></script>
-    
-    <!-- Some JS for this page -->
-    <script type="text/javascript">  
-      /*
-      * This function takes an event and disables the default behavior.
-      * @param   event   e   The event we're preventing the behavior of.
-      */
-      function preventBehavior(e) 
-      { 
-          e.preventDefault(); 
-      }
-      
-      
-      /* 
-      * When the body element loads, create an event listener
-      * to fire off function "onDeviceReady" when the device
-      * reports ready.
-      */
-      function onBodyLoad()
-      {		
-          document.addEventListener("deviceready", onDeviceReady, false);
-      };
-      
-    </script>
+    <script type="text/javascript" charset="utf-8" src="http://10.150.1.204:3001/socket.io/socket.io.js"></script>
+    <script type="text/javascript" charset="utf-8" src="viewReplay.js"></script>
     
   </head>
-  <!-- When body element loads, call "onBodyLoad()" -->
-  <body onload="onBodyLoad();"> 
+  <body> 
    
       <!-- Our nice little menu at the top, with a link back to the main menu. -->
       <div id="topBar">        

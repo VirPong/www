@@ -71,7 +71,6 @@ var authLooping = false;
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
 function initCanvas(){
-    displaySelection(fieldStyleFlag);
     context = document.getElementById('gameCanvas').getContext('2d');
     context.canvas.width = window.innerWidth*(0.90);
     context.canvas.height = window.innerHeight*(0.75);
@@ -223,236 +222,6 @@ function paddleBounceEvent(){
 };
 
 
-//========================================================================
-//========================================================================
-//==============================INPUT CODE================================
-//========================================================================
-//========================================================================
-
-/**
- * Initializes the appropriate input methods for playing a game.
- * @param {method} a string for the desired input method. 
- * "K" = Keyboard
- * "T" = Touchscreen
- * "W" = Wii Remote
- * "A" = Local Accelerometer
-**/
-function handleInputSelect(method){
-    if(method == "keys"){
-	fieldStyleFlag = "gameCanvas";
-	document.onkeydown = movePaddle;
-    }else if(method == "touchscreen"){
-	fieldStyleFlag = "gameCanvasWithButtons"
-    }else if(method == "wii"){
-	//display the select
-	fieldStyleFlag = "gameCanvas";
-	alert("Select VirPongIME in the next popup.");
-	window.KeySelect.showKeyBoards();
-	document.onkeydown = movePaddle;
-	wiiFlag = true;
-    }else if(method == "localAccel"){
-        setupLocalAccelerometer();
-	fieldStyleFlag = "gameCanvas";
-    }
-    connectToServer();
-};
-
-/**
- * Receive the input and send it to changePaddlePosition(), which actually 
- * changes the paddle position.
- * @param {e} the event passed by the keypress.
- */
-function movePaddle(e) {
-	var evntObj = (document.all)?event.keyCode:e.keyCode;
-	var actualKey = String.fromCharCode(evntObj);
-	changePaddlePosition(actualKey);
-};
-
-
-/**
- * Change the value of leftPaddle or rightPaddle so that it will draw in 
- * the correct place.  This method is for a string input.  "W" is down and
- * "S" is up. 
- *  @param {actualKey} The string value of the key pressed.
- */
-function changePaddlePosition(actualKey) {
-    if(paddleID == 0){
-    	if(actualKey == 'W'){ //check which key was pressed
-    		if(leftPad > 0){ 
-    			//do nothing if it would move paddle out of frame
-    			leftPad = leftPad - motionStep;
-    		}
-    	}else if(actualKey == 'S'){
-    		if(leftPad < (gameY - paddleHeight)){
-    			leftPad = leftPad + motionStep;
-    		}
-    	}updatePaddleToServer(leftPad);
-	}else{
-	    if(actualKey == 'W'){ //check which key was pressed
-	    	if(rightPad > 0){ 
-	    		// do nothing if it would move paddle out of frame
-	    		rightPad = rightPad - motionStep;
-	    	}
-	    }if(actualKey == 'S'){
-	    	if(rightPad < (gameY - paddleHeight)){
-	    		rightPad = rightPad + motionStep;
-	    	}
-	    }updatePaddleToServer(rightPad);
-	}		
-};	
-
-function detectViableInputMethods() {
-      
-    /*  Figure out what platform we're running on, return the correct choices for input selection. */
-    
-    var userAgent = navigator.userAgent;
-    // var thePlatform;
-    
-    var theReturn = "<div id=\"mainWrapper\"><h1 align=\"center\">Select your input method.</h1>";
-    
-    if((userAgent.indexOf("iPad")!=-1)||(userAgent.indexOf("iPhone")!=-1)||(userAgent.indexOf("iPod")!=-1)) {
-        
-        // iOS device, so we get touchscreen buttons, accelerometer, and Wii Remote.
-        // thePlatform = "iOS";
-        theReturn = theReturn + "<a class=\"button\" onclick=\"handleInputSelect('touchscreen');\">Touchscreen Buttons</a>" + 
-        "<a class=\"button\" onclick=\"handleInputSelect('localAccel');\">Local Accelerometer</a>"+
-        "<a class=\"button\" onclick=\"handleInputSelect('wii');\">Wii Remote</a>";
-
-        
-    } else if((userAgent.indexOf("Android")!=-1)) {
-        // Android device, so we get touchscreen buttons, keyboard input, and Wii Remote.
-        //thePlatform = "android";
-         theReturn = theReturn +
-         "<a class=\"button\" onclick=\"handleInputSelect('touchscreen');\">Touchscreen Buttons</a>" + 
-         "<a class=\"button\" onclick=\"handleInputSelect('localAccel');\">Local Accelerometer</a>" +
-         "<a class=\"button\" onclick=\"handleInputSelect('wii');\">Wii Remote</a>";
-    }  else {
-         // Browser, so we get onscreen buttons and keyboard.
-         theReturn = theReturn + "<a class=\"button\" onclick=\"handleInputSelect('keys');\">Keyboard</a>"+
-         "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('touchscreen');\">On-Screen Buttons</a>";  
-     }
-    
-    theReturn = theReturn + "</div>";
-    
-    return theReturn;
-    
-};
-
-
-function setupLocalAccelerometer() {
-  
-    // Set the frequency of refresh for Accelerometer data.
-    var options = { frequency: 50 };
-    
-    // Start watching accerlation and point to it with watchID.
-    watchID = navigator.accelerometer.watchAcceleration(onSuccess,
-                                                            onError,
-                                                            options);
-    
-};
-
-/*
- * Contains the work done each time acceleration is audited. Right now,
- * we display the raw data with a timestamp, as well as the calculated
- * position, which is taken from the getPosition function.
- * @param   acceleration    An object containing the current acceleration
- *                          values. (x,y,z,timestamp).
- */
-function onSuccess(acceleration)
-{ 
-    // Get paddlePosition from getPosition, round it to an integer
-    // scale it up and add the "px" to it so it can be injected
-    // into CSS styling for data visualization in paddle form.
-    updatePaddleToServer(Math.round(getPosition(acceleration)));
-    
-}
-
-/*
- * Fires off an alert if there's an error in the collection of acceleration.
- */
-function onError(acceleration) {
-    
-    alert('Error!');
-    
-};
-
-// Setup for calculating position.
-// These are basically a bunch of initial values.
-// Their nomenclature makes clear their purpose.
-var currentAcceleration = 0;
-var currentVelocity = 0;
-var currentPosition = 50;
-
-var previousAcceleration = 0;
-var previousVelocity = 0;
-var previousPosition = 0;
-
-// What to use as a frequency to calculate passing
-// of time between accelerometer data refreshes.
-var TIME = .3;
-
-/*
- * Calculates the position of the "paddle" given accelerometer data from tilt-action.
- * @param   acceleration    The acceleration data (x,y,z,timestamp).
- * @return  int position    An integer from 0 to 100 representing position.
- */
-function getPosition(acceleration) {
-    
-    // Invert acceleration for the sake of mapping the tilts
-    // in the correct direction.
-    currentAcceleration = -1*acceleration.y;
-    
-    // Double the acceleration for more usable data.
-    var virtualAcceleration = 2*currentAcceleration;
-    
-    // This detects if acceleration is in the opposite direction
-    // of velocity, such as when we're changing direction.
-    if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
-        
-        // Instead of doubling the acceleration, quadruple it.
-        // This makes the deceleration and change of direction
-        // happen much more quickly.
-        virtualAcceleration = currentAcceleration * 4;
-        
-    }
-    
-    // Add TIME * virtualAcceleration to the previous Velocity
-    // to update it to what is close to what the current Velocity
-    // would be.
-    currentVelocity = previousVelocity + (TIME * virtualAcceleration);
-    
-    // Find the midpoint between previous and current.
-    var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
-    
-    // Just as we did with the Velocity from Acceleration, do to Position
-    // from Velocity.
-    currentPosition = currentPosition + (TIME * averageVelocity);
-    previousPosition = currentPosition;
-    
-    // Set the currents to the previouses to prepare for the next cycle through this function.
-    previousVelocity = currentVelocity;
-    previousAcceleration = currentAcceleration;
-    
-    // Prevent us from going over 100 or under 0.
-    if(currentPosition>100) { currentPosition = 100; }
-    if(currentPosition<0) { currentPosition = 0; }
-    
-    // If we're at either end of the range, set acceleration and velocity
-    // to zero so that we immediately change direction.
-    if(currentPosition==0||currentPosition==100) 
-    { 
-        previousVelocity = 0;
-        previousAcceleration = 0;
-        currentVelocity = 0;
-        currentAcceleration = 0; 
-    }
-    
-    // Return our calculated position. 
-    return currentPosition;
-    
-};
-
-
 
 //========================================================================
 //========================================================================
@@ -463,67 +232,36 @@ function getPosition(acceleration) {
  * The 'document.addEventListener' contains reactions to information sent 
  * by the server.
  */
-//XXXX We need to fix this to not be an onload event.  Maybe a button?
 document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of 
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
-    displaySelection("inputMethodSelection");
+    connectToServer();
 });
 
 function connectToServer(){	
     try{
-   	socket = io.connect("10.150.1.204:3000"); 
+   	socket = io.connect("10.150.1.204:3001"); 
     }catch(err){
    	alert("There was an error connecting to the server."+
    	     " Returning to the previous page.");
    	history.go(-1);
     }
-    performAuthentication();
-    /* A failed authentication event. */
-    socket.on("authFailed", function(data){
-	if(authLooping){
-	    alert("Login is not working.  The server may be down.  We'll "+
-		  "take you back home now.");
-	    window.navigate("index.html");
-	}
-	isGuest = confirm("Your login failed.  Would you like to proceed as a guest?");
-	if(isGuest){
-	    authLooping = true;
-	    socket.emit("auth", {username: "guest", password: "0000"});
-	}else{
-	    alert("You will now be returned to the previous page.");
-	    history.go(-1);
-	}
-    });
-    /* A successful authentication event. */
-    socket.on("authGranted", function(data){
-	authLooping = false;
-    });
-    /* Tells us which paddle we are. */
-    socket.on('paddleID', function(data){
-	if(data.paddleID == 0){
-	    alert("You are the left paddle.");
-	}else{
-	    alert("You are the right paddle.");
-	}
-	paddleID = data.paddleID;
-	initCanvas();
-    });
     /* Retrievs the user names */
     socket.on("gameInfo", function(data){
 	playerOneName = data.names[0];
 	palyerTwoName = data.names[1];
     });
     /** Updates the state of the game (basically coordinates). */
-    socket.on('gameState', function(data){
+    socket.on('replayInfo', function(data){
 	//expecting arrays for paddle1, paddle2, ballPos
-        leftPad = data.paddle[0];
-        rightPad= data.paddle[1];
-        xBall = data.ball[0];
-        yBall = data.ball[1];
-        eventController(data.gameEvent); // eventController executes events
-        draw();
+        leftPad = data.docs.paddle[0];
+        rightPad= data.docs.paddle[1];
+        xBall = data.docs.ball[0];
+        yBall = data.docs.ball[1];
+	scoreLeft = data.docs.scores[0];
+	scoreRight = data.docs.score[1];
+	draw();
     });
     socket.on('scoreUpdate', function(data){
 	scoreLeft = data.score[0];
@@ -532,30 +270,12 @@ function connectToServer(){
     /**When the server sends a room list, the player can pick a room or
        start a new one
        */
-    socket.on('roomList', function(data){
-	//First check if there are any rooms and prompt to make a new one
-	//if there are none.
-	if(data.numRooms == 0){
-	    displaySelection("newRoom");
-//    var roomName = prompt("You must create a game room to play "+
-//			  "in. What should the name be?");
-//    createRoom(roomName);
-	    return;
+    socket.on('games', function(data){
+	var gameList = "";
+	for(i=0; i<data.names.length; i=i+1){
+		gameList=gameList+"<a class=\"button\" onclick=\"viewGame(\'"+data.names[i]+"\');\">"+data.names[i]+"</a>";
 	}
-	//Check if the player wants to use an existing room 
-	//Construct the room list
-	//XXXX this doesn't work yet
-	var roomList = "";
-	for(i=0; i<data.numRooms; i=i+1){
-		roomList=roomList+"<a class=\"button\" onclick=\"joinRoom(\'"+data.rooms[i]+"\',\'player\');\">"+data.rooms[i]+"</a>";
-	}
-	//Prompt for a valid room number
-	displaySelection("selectRoom", roomList);
-//	while(data.rooms.indexOf(room)==-1){
-	    
-//	  room = prompt("In which room would you like to play? \n"+
-//			roomList);
-//	}
+	displaySelection("selectGame", gameList);
     });
     /* A function for the end of a game. It notifies the player of whether
      he or she won/lost. */
@@ -589,8 +309,9 @@ function connectToServer(){
  *@param room a string representing the room name
  *@param clientType player or spectator as a string
  */
-function joinRoom(room, clientType){
-    socket.emit('joinRoom', {name: room, clientType: clientType});
+function viewGame(gameName){
+    displaySelection("gameCanvas");
+    socket.emit('watchGame', {game: gameName});
 };
 
 /**
@@ -631,13 +352,10 @@ function displaySelection(selection, options){
 	//A game canvas with no buttons
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br />";
-    }else if(selection == "newRoom"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">What do you want to name "+
-	    "your game room?</h1><!-- Room --><input type=\"text\" "+
-	    "value=\"\" name=\"userName\" id=\"roomName\" "+
-	    "onFocus=\"this.value=\"\"\" autocapitalize=\"off\" "+
-	    "autocorrect=\"off\" /><!-- Submit --><input type=\"button\" "+
-	    "value=\"Select Room\" id=\"selectRoom\" onClick=\"handleNewRoom()\" /></form><br /></div>";
+	initCanvas();
+    }else if(selection == "selectGame"){
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Which game do you want to view?</h1>"+
+	    options+"</div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
 	view.innerHTML == "The game is over."+
