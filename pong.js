@@ -56,8 +56,8 @@ var inputStyle;
 
 
 // Sounds
-//var paddleBounceSound = new Media('sounds/paddlebounce.wav');
-//var wallBounceSound = new Media('sounds/wallbounce.wav');
+var paddleBounceSound = new Media("./sounds/paddlebounce.wav");
+var wallBounceSound = new Media("./sounds/wallbounce.wav");
 
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
@@ -236,10 +236,10 @@ function handleInputSelect(method){
     }if(method == "touchscreen"){
 	inputStyle = "gameCanvasWithButtons"
     }if(method == "wii"){
-	alert("You selected Wii Remote.");
 	//display the select
 	inputStyle = "gameCanvas";
-	window.KeySelect.showKeyBoards();
+//alert("Select VirPongIME in the next popup.");
+//window.KeySelect.showKeyBoards();
 	document.onkeydown = movePaddle;
     }if(method == "localAccel"){
         setupLocalAccelerometer();
@@ -312,13 +312,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function connectToServer(){	
-    try{
+    //try{
 	socket = io.connect("10.150.1.204:3000");
-    }catch(err){
-	alert("There was an error connecting to the server."+
-	     " Returning to the previous page.");
-	history.go(-1);
-    }
+   //}catch(err){
+   //	alert("There was an error connecting to the server."+
+   //	     " Returning to the previous page.");
+   //	history.go(-1);
+   //}
     socket.on('paddleID', function(data){
 	if(data.paddleID == 0){
 	    alert("You are the left paddle.");
@@ -450,7 +450,10 @@ function displaySelection(selection, options){
 	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('localAccel');\" href=\"#\">Local Accelerometer</a>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a></div>";
+	    "<a align=\"center\" class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a></div>"+
+	    "<p style=\"color:white\" align=\"center\">Disclaimer: At the time of this writing, the gods of computing have not made it possible to automagically "+
+	    "detect your device.  So, please don't select an input method your device doesn't support.  Refer to the VirPong"+
+	    " website for more information.</p>";
     }else if(selection == "selectRoom"){
 	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do you want to create a new room?</h1>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+

@@ -21,8 +21,7 @@
     <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />		
     
     <!-- Include PhoneGap! -->
-    <!--<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>-->
-    <script type="text/javascript" charset="utf-8" src="phonegapSourceChooser.js"></script>
+    <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0-android.js"></script>
         
     <!-- Some basic JS for this document. -->
     <script type="text/javascript">
@@ -53,7 +52,7 @@
       function onDeviceReady()
       {
           // When the device is ready, disable scrolling by touch.
-          document.addEventListener("touchmove", preventBehavior, false);
+      	  // document.addEventListener("touchmove", preventBehavior, false);
       }
         
     </script>
@@ -71,12 +70,8 @@
       <br />
       
       <!-- Our big blue buttons! -->
-      <a class="button" href="authentication.html">Log In & Play</a>
-      <!-- <a class="button" href="accelTest.html">Native Accel. Data</a> -->
-      <a class="button" href="settings.html">Settings</a>
-      
-      <a class="button" href="formFill-Test.html">Form Fill Test</a>
-      
+      <a class="button" href="playGame.html">Play a game!</a>
+      <a class="button" href="settings.html">Set your Username and PIN</a>
       <br />
       
       <!-- Small footer text. -->
