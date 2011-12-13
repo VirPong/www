@@ -55,21 +55,21 @@ var PADDLEBOUNCE = 2;
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
  */
-function initClient(){
-	context = gameCanvas.getContext("2d");
-	context.canvas.width = window.innerWidth*(0.90);
-	context.canvas.height = window.innerHeight*(0.75);
-	screenModifierX = context.canvas.width/100;
-	screenModifierY = context.canvas.height/100;
+function initCanvas(){
+    context = gameCanvas.getContext("2d");
+    context.canvas.width = window.innerWidth*(0.90);
+    context.canvas.height = window.innerHeight*(0.75);
+    screenModifierX = context.canvas.width/100;
+    screenModifierY = context.canvas.height/100;
     
-	var size = context.canvas.width;
-	size = Math.floor(size*.04+.92);
-	var font = String(size);
+    var size = context.canvas.width;
+    size = Math.floor(size*.04+.92);
+    var font = String(size);
     
-	context.fillStyle = "#ddd";
-	var text = size+"px Silkscreen-Expanded";
-	context.font = text;
-	context.textBaseline = "top";
+    context.fillStyle = "#ddd";
+    var text = size+"px Silkscreen-Expanded";
+    context.font = text;
+    context.textBaseline = "top";
 };
 
  
@@ -221,22 +221,21 @@ function paddleBounceEvent(){
  * "W" = Wii Remote
  * "A" = Local Accelerometer
 **/
-function initInputMethod(method){
-    if(method == "K"){
+function handleInputSelect(method){
+    if(method == "keys"){
 	document.onkeydown = movePaddle;
-    }if(method == "T"){
+    }if(method == "touchscreen"){
 	//DRAW THE BUTTONS
 	alert("You selected touchscreen.");
-    }if(method == "W"){
+    }if(method == "wii"){
 	alert("You selected Wii Remote.");
 	document.onkeydown = movePaddle;
-    }if(method == "A"){
+    }if(method == "localAccel"){
 	//XXXX Hook into the accelerometer stuff
 	alert("You picked local accelerometer.");
     }
+    connectToServer();
 };
-//Listen for keypresses as input methods
-document.onkeydown = movePaddle;
 
 /**
  * Receive the input and send it to changePaddlePosition(), which actually 
@@ -265,7 +264,7 @@ function changePaddlePosition(actualKey) {
 	    }
 	}else if(actualKey == 'S'){
 	    if(leftPad < (gameY - paddleHeight)){
-		leftPad = leftPad + motionStep;
+	    	leftPad = leftPad + motionStep;
 	    }
 	}updatePaddleToServer(leftPad);
 	}else{
@@ -297,9 +296,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of 
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
-    socket = io.connect("10.150.1.204:3000");
-    
+    try{
+	socket = io.connect("10.150.1.204:3000");
+    }catch(err){
+	alert("There was an error connecting to the server."+
+	     " Returning to the previous page.");
+	history.go(-1);
+    }
+    displaySelection("inputMethodSelection");
     performAuthentication();
+});
+
+function connectToServer(){	
     socket.on('paddleID', function(data){
 	if(data.paddleID == 0){
 	    alert("You are the left paddle.");
@@ -307,6 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    alert("You are the right paddle.");
 	}
 	paddleID = data.paddleID;
+	displaySelection("gameCanvas");
     });
     /** Updates the state of the game (basically coordinates). */
     socket.on('gameState', function(data){
@@ -329,36 +338,33 @@ document.addEventListener('DOMContentLoaded', function() {
 	//First check if there are any rooms and prompt to make a new one
 	//if there are none.
 	if(data.numRooms == 0){
-	    var roomName = prompt("You must create a game room to play "+
-				  "in. What should the name be?");
-	    createRoom(roomName);
+	    displaySelection("newRoom");
+//    var roomName = prompt("You must create a game room to play "+
+//			  "in. What should the name be?");
+//    createRoom(roomName);
 	    return;
 	}
 	//Check if the player wants to use an existing room
-	isNew = confirm("Do you want to create a new game room?");
+	var isNew = confirm("Do you want to create a new game room?"); 
  	if(isNew){
-	    var roomName = prompt("What do you want the name to be?");
-	    createRoom(roomName);
+	    displaySelection("newRoom");
+//	    var roomName = prompt("What do you want the name to be?");
+//	    createRoom(roomName);
 	    return;
 	}
 	//Construct the room list
 	//XXXX this doesn't work yet
 	var roomList = "";
 	for(i=0; i<data.numRooms; i=i+1){
-		roomList=roomList+data.rooms[i]+"\n";
+		roomList=roomList+"<h3 align='center'>"+data.rooms[i]+"</h3>";
 	}
 	//Prompt for a valid room number
-	var room = "#X#X#X!!!#X#X#X";
-	while(data.rooms.indexOf(room)==-1){
-	  room = prompt("In which room would you like to play? \n"+
-			roomList);
-	}
-	isPlayer = confirm("Player?");
-	if(isPlayer){
-		joinRoom(room, "player");
-	}else{
-		joinRoom(room, "spectator");
-	}
+	displaySelection("selectRoom", roomList);
+//	while(data.rooms.indexOf(room)==-1){
+	    
+//	  room = prompt("In which room would you like to play? \n"+
+//			roomList);
+//	}
     });
     /* A function for the end of a game. It notifies the player of whether
      he or she won/lost. */
@@ -366,25 +372,26 @@ document.addEventListener('DOMContentLoaded', function() {
 	resultString = "";
 	if(scoreLeft<scoreRight){
 	    if(paddleID == 0){
-		resultString = "You lost."
+		displaySelection("gameEnd", "lost");
 	    }else{
-		resultString = "You won!"
+		displaySelection("gameEnd", "won");
 	    }
 	}else{
 	    if(paddleID == 0){
-		resultString = "You won!"
+		displaySelection("gameEnd", "won");
 	    }else{
-		resultString = "You lost."
+		displaySelection("gameEnd", "lost");
 	    }
 	}
-	alert("The game is over. \n"+resultString);
     });
     /* A function for alerting the client when a disconnect occurs. */
     socket.on("disconnect", function(data){
-	alert("You have been disconnected from the server!");
+	alert("You have been disconnected from the server! You will"+
+	      " be returned to the previous page.");
+	history.go(-1);
     });
     //alert the server of our player status
-});
+};
 
 /**
  * Select the room to join.
@@ -415,7 +422,57 @@ function updatePaddleToServer(position){
  * to the server.
  */
 function performAuthentication(){
-    
     var username = localStorage.getItem("username");
     var pin = localStorage.getItem("pin");
+};
+
+
+function displaySelection(selection, options){
+    var view = document.getElementById("view");
+    if(selection == "gameCanvas"){
+	view.innerHTML = "<canvas id='gameCanvas' height='100' "+
+	    "width='100'></canvas><br /><a href='#' "+
+	    "onClick='changePaddlePosition('W');'>Up</a>"+      
+	    "<a href='#' onClick='changePaddlePosition('S');'>Down</a>";
+	initCanvas();
+    }else if(selection == "inputMethodSelection"){
+	view.innerHTML = "<h2 align='center'>Select your input method.</h2>"+
+	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
+	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
+	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('localAccel');\" href=\"#\">Local Accelerometer</a>"+
+	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a>";
+    }else if(selection == "selectRoom"){
+	view.innerHTML = "<h2 align='center'>Room options:"+
+	    "</h2>"+options+"<form name='roomSelection' "+
+	    "id='pinEntry'><!-- Room --><input type='text' "+
+	    "value='' name='userName' id='roomSelection' "+
+	    "onFocus='this.value=''' autocapitalize='off' "+
+	    "autocorrect='off' /><!-- Submit --><input type='button' "+
+	    "value='Select Room' id='selectRoom' "+
+	    "onClick='handleRoomSelect();' /></form><br />";
+    }else if(selection == "player or spectator"){
+	view.innerHTML = "player or spectator?";
+    }else if(selection == "newRoom"){
+	view.innerHTML = "<h2 align='center'>What do you want to name"+
+	    "your game room?</h2>"+options+"<form name='roomName' "+
+	    "id='pinEntry'><!-- Room --><input type='text' "+
+	    "value='' name='userName' id='roomName' "+
+	    "onFocus='this.value=''' autocapitalize='off' "+
+	    "autocorrect='off' /><!-- Submit --><input type='button' "+
+	    "value='Select Room' id='selectRoom' "+
+	    "onClick='handleNewRoom();' /></form><br />";
+	    "should the name be?";
+    }else if(selection == "gameEnd"){
+	view.innerHTML == "The game is over.  You "+options+".";
+    }
+};
+
+function handleRoomSelect(){
+    var room = document.roomSelection.roomSelection.value;
+    joinRoom(room, "player");
+};
+
+function handleNewRoom(){
+    var room = document.roomName.roomName.value;
+    createRoom(room);
 };

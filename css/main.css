@@ -200,3 +200,18 @@ input#logIn {
     margin-top: 20px;
 
 }
+
+h2 {
+	font-size: 1em;
+	color: #FFFFFF;
+	margin: .1em;
+	padding: 3em;
+}
+
+
+h3 {
+	font-size: .8em;
+	color: #FFFFFF;
+	margin: .1em;
+	padding: .5em;
+}

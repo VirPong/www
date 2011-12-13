@@ -31,10 +31,10 @@
 	  href="css/iphone.css" type="text/css" />		
     
     <!-- Include PhoneGap, Socket.IO, and our pong.js -->
-    <!--<script type="text/javascript" charset="utf-8" 
+   <!--<script type="text/javascript" charset="utf-8" 
 	src="phonegap-1.2.0.js"></script>-->
-    <script type="text/javascript" charset="utf-8" 
-	    src="phonegapSourceChooser.js"></script>      
+<!--    <script type="text/javascript" charset="utf-8" 
+	    src="phonegapSourceChooser.js"></script>      -->
     <script type="text/javascript" charset="utf-8" 
 	    src="http://10.150.1.204:3000/socket.io/socket.io.js"></script>
     <script type="text/javascript" charset="utf-8" src="pong.js"></script>
@@ -59,11 +59,7 @@
       function onBodyLoad()
       {		
           document.addEventListener("deviceready", onDeviceReady, false);
-      
-          // Run some setup for the canvas and pong game.
-          initClient();
-          draw();
-      }
+      };
       
       /* 
       * This gets fired off when the device reports ready.
@@ -76,32 +72,25 @@
       
           // Add the listener for a touch move so that we can disable its 
           // behavior.
-          document.addEventListener("touchmove", preventBehavior, false);                
+          document.addEventListener("touchmove", preventBehavior, false);
       }
       
     </script>
     
   </head>
   <!-- When body element loads, call "onBodyLoad()" -->
-  <body onload="onBodyLoad();"> 
-    
-    <!-- Our nice little menu at the top, with a link back to the main menu. -->
-    <div id="topBar">
+  <body onload="onBodyLoad();" text="white"> 
+    <div id="mainWrapper">
+
+      <!-- Our nice little menu at the top, with a link back to the main menu. -->
+      <div id="topBar">
         
-      <a class="topBarButton" href="index.html">Main Menu</a>
-            
+	<a class="topBarButton" href="index.html">Main Menu</a>            
+      </div>
+    
+      <!-- Our game canvas. We grab the id with JS to use with JS. -->
+      <!-- So no attributes are really needed here. -->
+      <div id="view"></div>
     </div>
-    
-    <!-- Our game canvas. We grab the id with JS to use with JS. -->
-    <!-- So no attributes are really needed here. -->
-    <canvas id="gameCanvas" height="100" width="100"></canvas>
-    <br />
-    
-    <!-- XXXX THESE NEED TO BE BUTTONS AND PROBABLY DIV ELEMENTS WE CAN 
-	 FILL IN JAVASCRIPT -->
-    <a href="#" onClick="changePaddlePosition('W');">Up</a>
-      
-    <a href="#" onClick="changePaddlePosition('S');">Down</a>
-      
   </body>
 </html>
