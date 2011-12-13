@@ -360,16 +360,10 @@ function setupLocalAccelerometer() {
  */
 function onSuccess(acceleration)
 { 
-    
-    if(acceleration.x<-.2) {
-        
-        changePaddlePosition("S");
-        
-    } else if(acceleration.x>.2) {
-        
-        changePaddlePosition("W");
-        
-    }
+    // Get paddlePosition from getPosition, round it to an integer
+    // scale it up and add the "px" to it so it can be injected
+    // into CSS styling for data visualization in paddle form.
+    updatePaddleToServer(Math.round(getPosition(acceleration)));
     
 }
 
@@ -381,6 +375,83 @@ function onError(acceleration) {
     alert('Error!');
     
 };
+
+// Setup for calculating position.
+// These are basically a bunch of initial values.
+// Their nomenclature makes clear their purpose.
+var currentAcceleration = 0;
+var currentVelocity = 0;
+var currentPosition = 50;
+
+var previousAcceleration = 0;
+var previousVelocity = 0;
+var previousPosition = 0;
+
+// What to use as a frequency to calculate passing
+// of time between accelerometer data refreshes.
+var TIME = .3;
+
+/*
+ * Calculates the position of the "paddle" given accelerometer data from tilt-action.
+ * @param   acceleration    The acceleration data (x,y,z,timestamp).
+ * @return  int position    An integer from 0 to 100 representing position.
+ */
+function getPosition(acceleration) {
+    
+    // Invert acceleration for the sake of mapping the tilts
+    // in the correct direction.
+    currentAcceleration = -1*acceleration.y;
+    
+    // Double the acceleration for more usable data.
+    var virtualAcceleration = 2*currentAcceleration;
+    
+    // This detects if acceleration is in the opposite direction
+    // of velocity, such as when we're changing direction.
+    if((currentVelocity<0&&currentAcceleration>0) || (currentVelocity>0&&currentAcceleration<0)) {
+        
+        // Instead of doubling the acceleration, quadruple it.
+        // This makes the deceleration and change of direction
+        // happen much more quickly.
+        virtualAcceleration = currentAcceleration * 4;
+        
+    }
+    
+    // Add TIME * virtualAcceleration to the previous Velocity
+    // to update it to what is close to what the current Velocity
+    // would be.
+    currentVelocity = previousVelocity + (TIME * virtualAcceleration);
+    
+    // Find the midpoint between previous and current.
+    var averageVelocity = ((currentVelocity) + (previousVelocity)) / 2;
+    
+    // Just as we did with the Velocity from Acceleration, do to Position
+    // from Velocity.
+    currentPosition = currentPosition + (TIME * averageVelocity);
+    previousPosition = currentPosition;
+    
+    // Set the currents to the previouses to prepare for the next cycle through this function.
+    previousVelocity = currentVelocity;
+    previousAcceleration = currentAcceleration;
+    
+    // Prevent us from going over 100 or under 0.
+    if(currentPosition>100) { currentPosition = 100; }
+    if(currentPosition<0) { currentPosition = 0; }
+    
+    // If we're at either end of the range, set acceleration and velocity
+    // to zero so that we immediately change direction.
+    if(currentPosition==0||currentPosition==100) 
+    { 
+        previousVelocity = 0;
+        previousAcceleration = 0;
+        currentVelocity = 0;
+        currentAcceleration = 0; 
+    }
+    
+    // Return our calculated position. 
+    return currentPosition;
+    
+};
+
 
 
 //========================================================================
@@ -508,10 +579,6 @@ function connectToServer(){
     socket.on("disconnect", function(data){
 	alert("You have been disconnected from the server! You will"+
 	      " be returned to the previous page.");
-	if(wiiFlag){
-	    alert("You should now select your regular input method.");
-	    window.KeySelect.showKeyBoards();
-	}
 	history.go(-1);
     });
     //alert the server of our player status
@@ -564,27 +631,6 @@ function displaySelection(selection, options){
 	//A game canvas with no buttons
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br />";
-    }if(selection == "gameCanvasWithButtons"){
-	//A game canvas with arrow buttons, very nice
-	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
-	    "width=\"100\"></canvas><br /><a href=\"#\" "+
-	    "<a href=\"#\" onClick=\"changePaddlePosition('W');\"><img "+
-	    "src=\"graphics/uparrow-green.png\" style=\"position: absolute; "+
-	    "bottom: 5%; left: 5%;\"></a>"+	
-	    "<a href=\"#\" onClick=\"changePaddlePosition('S');\"><img "+
-	    "src=\"graphics/downarrow-green.png\" style=\"position: "+
-	    "absolute; bottom: 5%; right: 5%;\"></a>\"";
-    }else if(selection == "inputMethodSelection"){
-	//A screen for selecting input methods
-	view.innerHTML = detectViableInputMethods() +
-	    "<p style=\"color:white\" align=\"center\">Disclaimer: At the time of this writing, the gods of computing have not made it possible to automagically "+
-	    "detect your device.  So, please don't select an input method your device doesn't support.  Refer to the VirPong"+
-	    " website for more information.</p>";
-    }else if(selection == "selectRoom"){
-	//A screen for selecting a room, new or existing
-	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do you want to create a new room?</h1>"+
-	    "<a align=\"center\" class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
-	    options;
     }else if(selection == "newRoom"){
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">What do you want to name "+
 	    "your game room?</h1><!-- Room --><input type=\"text\" "+
@@ -594,14 +640,8 @@ function displaySelection(selection, options){
 	    "value=\"Select Room\" id=\"selectRoom\" onClick=\"handleNewRoom()\" /></form><br /></div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
-	view.innerHTML == "The game is over.  You "+options+"."+
-	    "<a align=\"center\" class=\"button\" onclick=\"location.reload(true)\" href=\"#\">Play again.</a>"+
+	view.innerHTML == "The game is over."+
 	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a>";
-	if(wiiFlag){
-	    alert("Prepare to disconnect your Wii Remote. (Select "+
-		  "your primary keyboard.");
-	    window.KeySelect.showKeyBoards();
-	}
     }
 };
 
