@@ -59,7 +59,7 @@ var PADDLEBOUNCE = 2;
 // Various flags 
 var fieldStyleFlag;
 var wiiFlag = false;
-
+var authLooping = false;
 
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
@@ -482,8 +482,14 @@ function connectToServer(){
     performAuthentication();
     /* A failed authentication event. */
     socket.on("authFailed", function(data){
+	if(authLooping){
+	    alert("Login is not working.  The server may be down.  We'll "+
+		  "take you back home now.");
+	    window.navigate("index.html");
+	}
 	isGuest = confirm("Your login failed.  Would you like to proceed as a guest?");
 	if(isGuest){
+	    authLooping = true;
 	    socket.emit("auth", {username: "guest", password: "0000"});
 	}else{
 	    alert("You will now be returned to the previous page.");
@@ -492,7 +498,7 @@ function connectToServer(){
     });
     /* A successful authentication event. */
     socket.on("authGranted", function(data){
-	//Nothing needed to be done
+	authLooping = false;
     });
     /* Tells us which paddle we are. */
     socket.on('paddleID', function(data){
