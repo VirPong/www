@@ -296,6 +296,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // The DOMContentLoaded event happens when the parsing of 
     // the current page is complete. This means that it only tries to 
     //connect when it's done parsing.
+    displaySelection("inputMethodSelection");
+    performAuthentication();
+});
+
+function connectToServer(){	
     try{
 	socket = io.connect("10.150.1.204:3000");
     }catch(err){
@@ -303,11 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	     " Returning to the previous page.");
 	history.go(-1);
     }
-    displaySelection("inputMethodSelection");
-    performAuthentication();
-});
-
-function connectToServer(){	
     socket.on('paddleID', function(data){
 	if(data.paddleID == 0){
 	    alert("You are the left paddle.");
@@ -344,22 +344,15 @@ function connectToServer(){
 //    createRoom(roomName);
 	    return;
 	}
-	//Check if the player wants to use an existing room
-	var isNew = confirm("Do you want to create a new game room?"); 
- 	if(isNew){
-	    displaySelection("newRoom");
-//	    var roomName = prompt("What do you want the name to be?");
-//	    createRoom(roomName);
-	    return;
-	}
+	//Check if the player wants to use an existing room 
 	//Construct the room list
 	//XXXX this doesn't work yet
 	var roomList = "";
 	for(i=0; i<data.numRooms; i=i+1){
-		roomList=roomList+"<h3 align='center'>"+data.rooms[i]+"</h3>";
+		roomList=roomList+"<a class='button' href='#' onclick='joinRoom("+data.rooms[i]+", 'player');'></a>";
 	}
 	//Prompt for a valid room number
-	displaySelection("selectRoom", roomList);
+	displaySelection("newRoom?", roomList);
 //	while(data.rooms.indexOf(room)==-1){
 	    
 //	  room = prompt("In which room would you like to play? \n"+
@@ -436,31 +429,27 @@ function displaySelection(selection, options){
 	    "<a href='#' onClick='changePaddlePosition('S');'>Down</a>";
 	initCanvas();
     }else if(selection == "inputMethodSelection"){
-	view.innerHTML = "<h2 align='center'>Select your input method.</h2>"+
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Select your input method.</h1>"+
 	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('keys');\" href=\"#\">Keyboard</a>"+
 	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('touchscreen');\" href=\"#\">Touchscreen Buttons</a>"+
 	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('localAccel');\" href=\"#\">Local Accelerometer</a>"+
-	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a>";
+	    "<a align='center' class=\"button\" onclick=\"handleInputSelect('wii');\" href=\"#\">Wii Remote</a></div>";
     }else if(selection == "selectRoom"){
-	view.innerHTML = "<h2 align='center'>Room options:"+
-	    "</h2>"+options+"<form name='roomSelection' "+
-	    "id='pinEntry'><!-- Room --><input type='text' "+
-	    "value='' name='userName' id='roomSelection' "+
-	    "onFocus='this.value=''' autocapitalize='off' "+
-	    "autocorrect='off' /><!-- Submit --><input type='button' "+
-	    "value='Select Room' id='selectRoom' "+
-	    "onClick='handleRoomSelect();' /></form><br />";
-    }else if(selection == "player or spectator"){
-	view.innerHTML = "player or spectator?";
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Room options:"+
+	    "</h1>"+options+"<br /></div>";
+    }else if(selection == "newRoom?"){
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>Do you want to create a new room?</h1>"+
+	    "<a align='center' class=\"button\" onclick=\"displaySelection('newRoom', 'bleh');\" href=\"#\">New Room</a>"+
+	    "<a align='center' class=\"button\" onclick=\"displaySelection('selectRoom',"+options+");\" href=\"#\">Select an existing room</a>";
     }else if(selection == "newRoom"){
-	view.innerHTML = "<h2 align='center'>What do you want to name"+
-	    "your game room?</h2>"+options+"<form name='roomName' "+
+	view.innerHTML = " <div id=\"mainWrapper\"><h1 align='center'>What do you want to name "+
+	    "your game room?</h1><form name='roomName' "+
 	    "id='pinEntry'><!-- Room --><input type='text' "+
 	    "value='' name='userName' id='roomName' "+
 	    "onFocus='this.value=''' autocapitalize='off' "+
 	    "autocorrect='off' /><!-- Submit --><input type='button' "+
 	    "value='Select Room' id='selectRoom' "+
-	    "onClick='handleNewRoom();' /></form><br />";
+	    "onClick='handleNewRoom();' /></form><br /></div>";
 	    "should the name be?";
     }else if(selection == "gameEnd"){
 	view.innerHTML == "The game is over.  You "+options+".";
