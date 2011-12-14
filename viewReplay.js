@@ -255,12 +255,12 @@ function connectToServer(){
     /** Updates the state of the game (basically coordinates). */
     socket.on('replayInfo', function(data){
 	//expecting arrays for paddle1, paddle2, ballPos
-        leftPad = data.docs.paddle[0];
-        rightPad= data.docs.paddle[1];
-        xBall = data.docs.ball[0];
-        yBall = data.docs.ball[1];
-	scoreLeft = data.docs.scores[0];
-	scoreRight = data.docs.score[1];
+        leftPad = Number(data.docs.paddle[0]);
+        rightPad= Number(data.docs.paddle[1]);
+        xBall = Number(data.docs.ball[0]);
+        yBall = Number(data.docs.ball[1]);
+	scoreLeft = Number(data.docs.scores[0]);
+	scoreRight = Number(data.docs.scores[1]);
 	draw();
     });
     socket.on('scoreUpdate', function(data){
