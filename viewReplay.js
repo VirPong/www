@@ -186,6 +186,10 @@ document.addEventListener('DOMContentLoaded', function() {
     connectToServer();
 });
 
+/**
+ * Sets up the connection to the server and registers multiple event listeners.
+ */
+
 function connectToServer(){	
     try{
    	socket = io.connect("10.150.1.204:3001"); 
