@@ -65,7 +65,16 @@ var PADDLEBOUNCE = 2;
 // Various flags 
 var fieldStyleFlag;
 var wiiFlag = false;
+var iOSWiiFlag = false;
 var authLooping = false;
+
+
+ 
+//========================================================================
+//========================================================================
+//=============================DRAWING CODE===============================
+//========================================================================
+//========================================================================
 
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
@@ -87,14 +96,6 @@ function initCanvas(){
     context.font = text;
     context.textBaseline = "top";
 };
-
- 
-//========================================================================
-//========================================================================
-//=============================DRAWING CODE===============================
-//========================================================================
-//========================================================================
-
 
 /**
  * Draws the game state.
@@ -254,7 +255,7 @@ function handleInputSelect(method){
         fieldStyleFlag = "gameCanvas";
         //alert("I hope you connected to the WiiMote already!");
 //        setInterval(updateWiiPosition(), 100);
-        wiiFlag = true;
+        iOSWiiFlag = true;
         setupLocalAccelerometer();
     }else if(method == "localAccel"){
         setupLocalAccelerometer();
@@ -364,6 +365,8 @@ function setupLocalAccelerometer() {
     
 };
 
+var localAccelPaddlePosition = 50;
+
 /*
  * Contains the work done each time acceleration is audited. Right now,
  * we display the raw data with a timestamp, as well as the calculated
@@ -374,21 +377,27 @@ function setupLocalAccelerometer() {
 function onSuccess(acceleration)
 { 
     
-    if(wiiFlag) {
+    if(iOSWiiFlag) {
         
         updateWiiPosition();
         
     } else {
-        
-    if(acceleration.x<-.2) {
-        
-        changePaddlePosition("S");
-        
-    } else if(acceleration.x>.2) {
-        
-        changePaddlePosition("W");
-        
+            
+        if(acceleration.x<-.2) {
+            
+            if(localAccelPaddlePosition < 90) {
+               localAccelPaddlePosition = localAccelPaddlePosition + 5; 
+            }
+            
+        } else if(acceleration.x>.2) {
+            
+            if(localAccelPaddlePosition > 0) {
+            localAccelPaddlePosition = localAccelPaddlePosition - 5;
+            }
+            
     }
+        
+        updatePaddleToServer(localAccelPaddlePosition);
         
     }
     
