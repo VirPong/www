@@ -493,6 +493,9 @@ function connectToServer(){
        start a new one
        */
     socket.on('roomList', function(data){
+	if(gameOver){
+	    return;
+	}
 	//First check if there are any rooms and prompt to make a new one
 	//if there are none.
 	if(data.numRooms == 0){
@@ -520,6 +523,7 @@ function connectToServer(){
     /* A function for the end of a game. It notifies the player of whether
      he or she won/lost. */
     socket.on("gameEnd", function(data){
+	gameOver = true;
 	resultString = "";
 	if(scoreLeft<scoreRight){
 	    if(paddleID == 0){
