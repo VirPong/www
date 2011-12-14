@@ -146,7 +146,7 @@ function displaySelection(selection, options){
 	var roomButtons = "";
 	for(i=0; i<roomList.length; i=i+1){
 	    roomButtons=roomButtons+"<a class=\"button\" onclick=\"joinRoom(\'"+
-		roomList[i]+"\',\'player\');\">"+roomList+"</a>";
+		roomList[i]+"\',\'player\');\">"+roomList[i]+"</a>";
 	}
 	//A screen for selecting a room, new or existing
 	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do "+
@@ -528,11 +528,15 @@ function connectToServer(){
     /**When the server sends a room list, the player can pick a room or
        start a new one. */
     socket.on("roomList", function(data){
-	roomList = data.rooms;
+	roomList = [];
+	for(i=0; i<data.rooms.length; i=i+1){
+	    if(data.rooms[i] != null){		
+		roomList.push(data.rooms[i]);
+	    }
+	}
 	if(gameOn){
 	    return;
 	}
-	roomList = data.rooms;
 	displaySelection("selectRoom", roomList);
     });
     /* A function for the end of a game. It notifies the player of whether
