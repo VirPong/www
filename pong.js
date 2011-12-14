@@ -60,12 +60,14 @@ var playerTwoName = "P2";
 
 var socket;
 
+var roomList = [];
+
 // Various flags 
 var fieldStyleFlag;
 var wiiFlag = false;
 var iOSWiiFlag = false;
 var authLooping = false;
-
+var gameOn = false;
 
 //Local accel.
 var watchID;
@@ -117,6 +119,7 @@ function displaySelection(selection, options){
 	//A game canvas with no buttons
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
 	    "width=\"100\"></canvas><br />";
+	gameOn = true;
     }if(selection == "gameCanvasWithButtons"){
 	//A game canvas with arrow buttons, very nice
 	view.innerHTML = "<canvas id=\"gameCanvas\" height=\"100\" "+
@@ -136,11 +139,20 @@ function displaySelection(selection, options){
 	    "don\'t select an input method your device doesn\'t support.  "+
 	    "Refer to the VirPong website for more information.</p>";
     }else if(selection == "selectRoom"){
+	if(roomList.length == 0){
+	    displaySelection("newRoom");
+	    return;
+	}
+	var roomButtons = "";
+	for(i=0; i<roomList.length; i=i+1){
+	    roomButtons=roomButtons+"<a class=\"button\" onclick=\"joinRoom(\'"+
+		roomList[i]+"\',\'player\');\">"+roomList+"</a>";
+	}
 	//A screen for selecting a room, new or existing
 	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Do "+
 	    "you want to create a new room?</h1><a align=\"center\" "+
 	    "class=\"button\" onclick=\"displaySelection('newRoom', "+
-	    "'bleh');\" href=\"#\">New Room</a>"+options+"</div>";
+	    "'bleh');\" href=\"#\">New Room</a>"+roomButtons+"</div>";
     }else if(selection == "newRoom"){
 	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">"+
 	    "What do you want to name your game room?</h1><!-- Room -->"+
@@ -153,7 +165,7 @@ function displaySelection(selection, options){
 	//A screen for the game finishing.  Also takes care of some cleanup.
 	view.innerHTML = "<div id=\"mainWrapper\"><h1>The game is over.  You "+
 	    options+".</h1><a align=\"center\" class=\"button\" "+
-	    "onclick=\"location.reload(true)\" href=\"#\">Play again.</a>"+
+	    "onclick=\"displaySelection('selectRoom');\" href=\"#\">Play again.</a>"+
 	    "<a align=\"center\" class=\"button\" onclick=\"\" href="+
 	    "\"index.html\">Return to the main screen.</a>";
 	if(wiiFlag){
@@ -516,22 +528,16 @@ function connectToServer(){
     /**When the server sends a room list, the player can pick a room or
        start a new one. */
     socket.on("roomList", function(data){
-	//First check if there are any rooms and prompt to make a new one
-	//if there are none.
-	if(data.numRooms == 0){
-	    displaySelection("newRoom");
+	roomList = data.rooms;
+	if(gameOn){
 	    return;
 	}
-	var roomList = "";
-	for(i=0; i<data.numRooms; i=i+1){
-		roomList=roomList+"<a class=\"button\" onclick=\"joinRoom(\'"+data.rooms[i]+"\',\'player\');\">"+data.rooms[i]+"</a>";
-	}
+	roomList = data.rooms;
 	displaySelection("selectRoom", roomList);
     });
     /* A function for the end of a game. It notifies the player of whether
      he or she won/lost. */
     socket.on("gameEnd", function(data){
-	gameOver = true;
 	resultString = "";
 	if(scoreLeft<scoreRight){
 	    if(paddleID == 0){
