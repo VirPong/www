@@ -36,73 +36,12 @@
                 e.preventDefault(); 
             }
             
-            
-            /* 
-             * When the body element loads, create an event listener
-             * to fire off function "onDeviceReady" when the device
-             * reports ready.
-             */
-            function onBodyLoad()
-            {		
-                document.addEventListener("deviceready", onDeviceReady, false);
-            }
-
-            
-            /* 
-             * This gets fired off when the device reports ready.
-             */
-            function onDeviceReady()
-            {
-                
-                // Add the listener for a touch move so that we can disable its behavior.
-                //document.addEventListener("touchmove", preventBehavior, false);
-                
-                // Prepare the Form.
-                prepareForm();
-                
-                
-            }
-            
-            /*
-             * Check the localStorage to see if there is a stored
-             * username and PIN. If so, forward to playGame, where
-             * actual authentication is handled. If not, autofill
-             * guest login information, and display autofilled form.
-             */
-            function prepareForm()
-            {
-                
-                // If there is a stored username, forward to playGame.
-                if(window.localStorage.username!=null) {
-                    
-                    document.pinEntry.userName.value = window.localStorage.username;
-                    document.pinEntry.userPIN.value = window.localStorage.pin;
-                    
-                    //alert('jumping! because we have a nonnull username that is ' + localStorage.username); 
-                    
-                    
-                    //window.open("playGame.html", "_self");
-                    //window.location = "playGame.html"; 
-                
-                } else {
-                
-                // Set the form data to guest login data.
-                document.pinEntry.userName.value = "guest";
-                document.pinEntry.userPIN.value = "0000";
-                    
-                }
-                
-                // alert('form prepared!');
-                
-            }
-            
             /*
              * Use local storage to store username/pin for the playGame
              * page (where authentication actually takes place in the socket
              * connection. Once data is stored, move on to playGame.
              */
-            function handleForm()
-            {
+            function handleForm(){
             	// Store the data from the input elements in the localStorage K/V pairs.
                 window.localStorage.setItem("username", document.pinEntry.userName.value);
                 window.localStorage.setItem("pin", document.pinEntry.userPIN.value);
@@ -110,48 +49,51 @@
                 // Move on to the home page.
                 window.location.href = "./index.html";
                 
-            }
-            
+            };            
         </script>
         
     </head>
     
-    <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
+    <body>
+      <!-- Our nice little menu at the top, with a link back to the main menu. -->
+      <div id="topBar">
         
-        <!-- Our nice little menu at the top, with a link back to the main menu. -->
-        <div id="topBar">
-            
-            <a class="topBarButton" href="index.html">Main Menu</a>
+        <a class="topBarButton" href="index.html">Main Menu</a>
         
-        </div>
+      </div>
        
-        <!-- Main page wrapper -->
-        <div id="mainWrapper">
+      <!-- Main page wrapper -->
+      <div id="mainWrapper">
+        
+        <center>
+          <!-- Displyay pinEntry form. -->
+          <form name="pinEntry" id="pinEntry">
             
-            <center>
-            <!-- Displyay pinEntry form. -->
-            <form name="pinEntry" id="pinEntry">
-                
-                <div style="font-size: 18pt;">U/N:</div>
-                <!-- Username -->
-                <input type="text" value="" name="userName" id="userName" onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
-                
-                <div style="font-size: 18pt;">PIN:</div>
-                <!-- PIN -->
-                <input type="password" value="" name="userPIN" id="userPIN" onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
-                
-                <br />
-                <!-- Submit -->
-                <a class="button" value="Log In" id="logIn" onClick="handleForm()">Save & Go To Game</a>
-                <a class="button" href="javascript:window.localStorage.clear(); window.location.reload();">Clear Username/PIN</a>
-                
-            </form>
-            </center>
+            <div style="font-size: 18pt;">U/N:</div>
+            <!-- Username -->
+            <input type="text" value="" name="userName" id="userName" "+
+		   "onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
+            
+            <div style="font-size: 18pt;">PIN:</div>
+            <!-- PIN -->
+            <input type="password" value="" name="userPIN" id="userPIN" "+
+		   "onFocus="this.value=''" autocapitalize="off" autocorrect="off" />
+            
             <br />
-                        
-            <!-- Display footer. -->
-            <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.</span>
-                
-        </div>
+            <!-- Submit -->
+            <a class="button" value="Log In" id="logIn" onClick="handleForm()">
+	      Save & Go To Game</a>
+            <a class="button" href="javascript:window.localStorage.clear(); "+
+	       "window.location.reload();">Clear Username/PIN</a>
+            
+          </form>
+        </center>
+        <br />
+        
+        <!-- Display footer. -->
+        <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserverd.
+	</span>
+        
+      </div>
     </body>
-</html>
+</html>	

@@ -5,16 +5,8 @@
 
 var socket;
 
-//Local accel.
-var watchID;
-var updateFrequencyCounter = 0;
-
-//Username and password.
-var name;
-var pass;
-//The canvas object handle.
 var context;
-
+ 
 //Standard 100x100 game space.
 var gameX = 100;
 var gameY = 100;
@@ -52,20 +44,17 @@ var paddleID;
 var playerOneName = "P1";
 var playerTwoName = "P2";
 
-// Event identifiers. For sound effects.
-var NOEVENT = 0;
-var WALLBOUNCE = 1;
-var PADDLEBOUNCE = 2;
-
-// Sounds
-//var paddleBounceSound = new Media("./sounds/paddlebounce.wav");
-//var wallBounceSound = new Media("./sounds/wallbounce.wav");
-
-
 // Various flags 
 var fieldStyleFlag;
 var wiiFlag = false;
 var authLooping = false;
+ 
+//========================================================================
+//========================================================================
+//=============================DRAWING CODE===============================
+//========================================================================
+//========================================================================
+
 
 /**
  * Starts the pong game & grabs the canvas so that we can modify it in JS.
@@ -87,14 +76,6 @@ function initCanvas(){
     context.textBaseline = "top";
 };
 
- 
-//========================================================================
-//========================================================================
-//=============================DRAWING CODE===============================
-//========================================================================
-//========================================================================
-
-
 /**
  * Draws the game state.
  */
@@ -108,7 +89,6 @@ function draw(){
     drawScore();
     drawHalfCourt();
 };
-
 
 /*
  * Draws a half court line.
@@ -192,39 +172,6 @@ function drawScore(){
 
 //========================================================================
 //========================================================================
-//==============================EVENT CODE================================
-//========================================================================
-//========================================================================
-
-/**
- * Performs actions related to the wall bounce event.
- */
-function eventController(eventCode){
-    if(eventCode == NOEVENT) {}
-    if(eventCode == PADDLEBOUNCE){
-        paddleBounceEvent();
-    }
-    if(eventCode == WALLBOUNCE){
-        wallBounceEvent();
-    }
-};
-/**
- * Performs actions related to the wall bounce event.
- */
-function wallBounceEvent(){
-    //wallBounceSound.play();   
-};
-/**
- * Performs actions related to the paddle bounce event.
- */
-function paddleBounceEvent(){
-   // paddleBounceSound.play();
-};
-
-
-
-//========================================================================
-//========================================================================
 //=============================SERVER CODE================================
 //========================================================================
 //========================================================================
@@ -264,7 +211,8 @@ function connectToServer(){
     socket.on('games', function(data){
 	var gameList = "";
 	for(i=0; i<data.names.length; i=i+1){
-		gameList=gameList+"<a class=\"button\" onclick=\"viewGame(\'"+data.names[i]+"\');\">"+data.names[i]+"</a>";
+		gameList=gameList+"<a class=\"button\" onclick=\"viewGame(\'"+
+		data.names[i]+"\');\">"+data.names[i]+"</a>";
 	}
 	displaySelection("selectGame", gameList);
     });
@@ -292,7 +240,6 @@ function connectToServer(){
 	      " be returned to the previous page.");
 	history.go(-1);
     });
-    //alert the server of our player status
 };
 
 /**
@@ -345,20 +292,12 @@ function displaySelection(selection, options){
 	    "width=\"100\"></canvas><br />";
 	initCanvas();
     }else if(selection == "selectGame"){
-	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Which game do you want to view?</h1>"+
-	    options+"</div>";
+	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">"+
+	    "Which game do you want to view?</h1>"+ options+"</div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
 	view.innerHTML == "The game is over."+
-	    "<a align=\"center\" class=\"button\" onclick=\"\" href=\"index.html\">Return to the main screen.</a>";
+	    "<a align=\"center\" class=\"button\" onclick=\"\" "+
+	    "href=\"index.html\">Return to the main screen.</a>";
     }
-};
-
-/**
-  * Grabs the room name from an element roomName.roomName and submits it as 
-  * a new room to the server.
-  */
-function handleNewRoom(){
-    var room = document.getElementById('roomName').value;
-    createRoom(room);
 };

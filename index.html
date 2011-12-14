@@ -21,7 +21,7 @@
     <link rel="stylesheet" media="only screen and (device-width: 480px)" href="css/iphone.css" type="text/css" />		
     
     <!-- Include PhoneGap! -->
-    <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0-iOS.js"></script>
+    <script type="text/javascript" charset="utf-8" src="phonegap-1.2.0-android.js"></script>
     <script type="text/javascript" charset="utf-8" src="WiiPosHandler.js"></script>
         
     <!-- Some basic JS for this document. -->
@@ -31,10 +31,9 @@
       * This function takes an event and disables the default behavior.
       * @param   event   e   The event we're preventing the behavior of.
       */
-      function preventBehavior(e)
-      { 
+      function preventBehavior(e){ 
           e.preventDefault(); 
-      }
+      };
       
             
       /* 
@@ -42,25 +41,24 @@
       * to fire off function "onDeviceReady" when the device
       * reports ready.
       */
-      function onBodyLoad()
-      {	
+      function onBodyLoad(){	
           document.addEventListener("deviceready", onDeviceReady, false);
-      }
+      };
       
       /* 
       * This gets fired off when the device reports ready.
       */
-      function onDeviceReady()
-      {
+      function onDeviceReady(){
           // When the device is ready, disable scrolling by touch.
       	  // document.addEventListener("touchmove", preventBehavior, false);
-      }
+      };
         
     </script>
         
   </head>
     
-  <body onload="onBodyLoad()"> <!-- When body element loads, call "onBodyLoad()" -->
+  <body onload="onBodyLoad()"> 
+    <!-- When body element loads, call "onBodyLoad()" -->
     
     <!-- Main page wrapper. -->
     <div id="mainWrapper">
@@ -70,16 +68,15 @@
       
       <br />
       
-        <!-- Our big blue buttons! -->
-        <a class="button" href="playGame.html">Play Game (Online)</a>
-        <a class="button" href="aiGame.html">Play Game (Alone)</a>
+      <!-- Our big blue buttons! -->
+      <a class="button" href="playGame.html">Play Game (Online)</a>
+      <a class="button" href="aiGame.html">Local Practice</a>
       <a class="button" href="settings.html">Settings</a>
       <a class="button" href="replays.html">Replays</a>
-      <a class="button" onclick="wiiConnect()">Connect to WiiMote</a>
+      <a class="button" onclick="wiiConnect()">Connect to WiiMote (iOS)</a>
       <br />
       <!-- Small footer text. -->
-      <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserved.</span>
-                
+      <span id="footerMeta">&copy 2011 Vir-Pong, Inc. All rights reserved.</span>          
     </div>
   </body>
 </html>

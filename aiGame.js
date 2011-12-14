@@ -1,18 +1,8 @@
 /*@author David Eva 
- * Contains user interface information, as well as communication to the server
- * and the wiimote.*/
+ * Contains the logic necessary for a game against an ai opponent.
+ */
 
-//Username and password, apparently.
-var name;
-var pass;
-//The canvas object handle.
 var context;
-
-// Sounds
-//var paddleBounceSound = new Media("sounds/paddlebounce.wav");
-//var wallBounceSound = new Media("sounds/wallbounce.wav");
-//var losingSound = new Media("sounds/game_over.wav");
-//var winningSound = new Media("sounds/domination.wav");
 
 //Standard 100x100 game space.
 var gameX = 100;
@@ -38,7 +28,6 @@ var xBall = (gameX/2)+10;
 var yBall = gameY/2;
 
 //Ball Velocity
-
 var dx = 1;
 var dy = 1;
 
@@ -55,36 +44,12 @@ var paddleID;
 var AI_SKILL = 1;
 var AIturn = 0;
 
-/**
- * Start the pong game & grab the canvas so that we can modify it in JS.
- */
-function initClient(){
-	context = gameCanvas.getContext("2d");
-	context.canvas.width = window.innerWidth*(0.9);
-	context.canvas.height = window.innerHeight*(0.83);
-	screenModifierX = context.canvas.width/100;
-	screenModifierY = context.canvas.height/100;
-    
-	var size = context.canvas.width;
-	size = Math.floor(size*.04+.92);
-	var font = String(size);
-    
-	context.fillStyle = "#ddd";
-	var text = size+"px sans-serf";
-	context.font = text;
-	context.textBaseline = "top";
-	
-	startAccelerometer();
-	setInterval(draw, 35);
-};
 
-
-
-//===============================================================================================
-//===============================================================================================
-//===================================PADDLE HANDLING CODE========================================
-//===============================================================================================
-//===============================================================================================
+//========================================================================
+//========================================================================
+//=======================PADDLE HANDLING CODE=============================
+//========================================================================
+//========================================================================
 
 
 function AImove(){
@@ -137,13 +102,37 @@ function changePaddlePosition(actualKey) {
 	}
 };
 
-//===============================================================================================
-//===============================================================================================
-//========================================DRAWING CODE===========================================
-//===============================================================================================
-//===============================================================================================
+//========================================================================
+//========================================================================
+//===============================DRAWING CODE=============================
+//========================================================================
+//========================================================================
 
-//var playedSound = 0;
+
+
+/**
+ * Start the pong game & grab the canvas so that we can modify it in JS.
+ */
+function initClient(){
+	context = gameCanvas.getContext("2d");
+	context.canvas.width = window.innerWidth*(0.9);
+	context.canvas.height = window.innerHeight*(0.83);
+	screenModifierX = context.canvas.width/100;
+	screenModifierY = context.canvas.height/100;
+    
+	var size = context.canvas.width;
+	size = Math.floor(size*.04+.92);
+	var font = String(size);
+    
+	context.fillStyle = "#ddd";
+	var text = size+"px sans-serf";
+	context.font = text;
+	context.textBaseline = "top";
+	
+	startAccelerometer();
+	setInterval(draw, 35);
+};
+
 /**
  * Draws the game state.
  */
@@ -173,7 +162,6 @@ function draw(){
  * Draw the half court line.
  */
 function drawHalfCourt() {
-    
     var width = 3;
     var height = 3;
     var topY = 1.5*height;
@@ -182,19 +170,16 @@ function drawHalfCourt() {
         drawRect(gameX*screenModifierX/2 - .5*width, topY, width, height, 'rgb(240,240,240)');
         topY = topY + 2*height;
         
-    }
-    
-}
+    }  
+};
 
-function drawPaddles() {
-    
+function drawPaddles() {    
     drawRect(0,Math.floor(leftPad*screenModifierY),Math.floor(paddleWidth*screenModifierX), 
              Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');//xpos, ypos, width, height
     
 	drawRect(Math.floor((gameX-paddleWidth)*screenModifierX),Math.floor(rightPad*screenModifierY),Math.floor(paddleWidth*screenModifierX),
-             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');
-    
-}
+             Math.floor(paddleHeight*screenModifierY), 'rgb(240,240,240)');  
+};
 
 /**
  * Draws rectangles on the canvas.
@@ -220,19 +205,10 @@ function drawRect(a, b, c, d, col){
  * Draws the ball at current position.
  */
 function drawBall(){
-
-    //Draw square "ball"
-    //context.save();
-    //var tlX = (xBall*screenModifierX)-10;
-    //var tlY = (yBall*screenModifierY)-10;
-    //var brX = 20;
-    //var brY = 20;
-    //drawRect(tlX, tlY, brX, brY, 'rgb(240,240,240)');
-  	//context.restore();
-  	
     var ballMod = screenModifierY;
-	drawRect(xBall*screenModifierX - .5*ballR*ballMod, yBall*screenModifierY - .5*ballR*screenModifierY, 2*ballR*ballMod, 
-	2*ballR*ballMod, 'rgb(240,240,240)');
+	drawRect(xBall*screenModifierX - .5*ballR*ballMod, 
+		 yBall*screenModifierY - .5*ballR*screenModifierY, 
+		 2*ballR*ballMod, 2*ballR*ballMod, 'rgb(240,240,240)');
 };
 
 /**
@@ -249,130 +225,116 @@ function drawScore(){
 };
 
 function gameOver(){
-	//context.clearRect(0,0, Math.floor(gameX*screenModifierX),Math.floor(gameY*screenModifierY));
-	var x = gameCanvas.width / 2;
+    var x = gameCanvas.width / 2;
     var y = gameCanvas.height / 2;
  
     context.font = "40pt Calibri";
     context.textAlign = "center";
     context.fillText("Game Over", x, y);
-    //if(playedSound == 0){
-	//	losingSound.play();
-	//	playedSound = 1;
-	//}
-}
+};
 function youWin(){
-	var x = gameCanvas.width / 2;
+    var x = gameCanvas.width / 2;
     var y = gameCanvas.height / 2;
  
     context.font = "40pt Calibri";
     context.textAlign = "center";
     context.fillText("You Win!!", x, y);
-    //if(playedSound == 0){
-	//	winningSound.play();
-	//	playedSound = 1;
-	//}
-}
+};
 
 
-//===============================================================================================
-//===============================================================================================
-//========================================CLIENT SIDE BALL LOGIC=================================
-//===============================================================================================
-//===============================================================================================
+//=======================================================================
+//=======================================================================
+//==========================CLIENT SIDE BALL LOGIC=======================
+//=======================================================================
+//=======================================================================
 
 
 function ballLogic(){
-
   //Ball bouncing logic
   
   if(yBall < 0 || yBall > gameY){
     dy = -dy; //change gBallPos[1] direction if you go off screen in y direction ....
   }
-  
   // Paddle Boundary Logic
   
-  // changed all these numbers to more reasonable also, these kinda stuff should also be fields but we can
-  // think about that later
+  // changed all these numbers to more reasonable also, these kinda stuff 
+  //  should also be fields but we can think about that later
   
-  if((xBall == paddleWidth + 1) && (yBall > leftPad - 3) && (yBall < (leftPad + paddleHeight + 3))){ //if it hits the left paddle
-    dx = -dx; 
-    AIturn = 0;
+  if((xBall == paddleWidth + 1) && (yBall > leftPad - 3) 
+     && (yBall < (leftPad + paddleHeight + 3))){ //if it hits the left paddle
+      dx = -dx; 
+      AIturn = 0;
   }
-  if((xBall == gameX - 4) && (yBall > rightPad - 3) && (yBall < (rightPad + paddleHeight + 3))){ //if it hits the right paddle
-    dx = -dx;
-    AIturn = 1;
+  if((xBall == gameX - 4) && (yBall > rightPad - 3) 
+     && (yBall < (rightPad + paddleHeight + 3))){ //if it hits the right paddle
+      dx = -dx;
+      AIturn = 1;
   }
   
   // if ball goes out of frame reset in the middle and put to default speed and increment gScore...
   
-  if(xBall < -10){ //changed these numbers you had old ones so ball was going super far out of frame
+  if(xBall < -10){ 
     xBall = gameX/2;
     yBall = gameY/2;
     dx = 1;
     dy = 1;
     scoreRight++;
     AIturn = 0;
-    //sendScore();
   }
-  if(xBall > gameX +10 ){ //changed these numbers you had old ones so ball was going super far out of frame
+  if(xBall > gameX +10 ){ 
     xBall = gameX/2;
     yBall = gameY/2;
     dx = 1;
     dy = 1;
     scoreLeft++;
     AIturn = 0;
-    //sendScore();
   }
-  
   xBall+=dx;
   yBall+=dy;
 };
 
-//===============================================================================================
-//===============================================================================================
-//========================================Accelerometer Code=====================================
-//===============================================================================================
-//===============================================================================================
+//======================================================================
+//======================================================================
+//==============================Accelerometer Code======================
+//======================================================================
+//======================================================================
 
-
+/**
+ * Begins the acceleration aqcuisition.
+ */
 function startAccelerometer(){
-	 // Set the frequency of refresh for Accelerometer data.
+    // Set the frequency of refresh for Accelerometer data.
      var options = { frequency: 100 };
                 
      // Start watching accerlation and point to it with watchID.
      var watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);  
-}
+};
 
-function onSuccess(acceleration)
-    { 
-     //var leftAccel = acceleration.y;
-     //var rightAccel = acceleration.x;
-    
+/**
+  * Handles certain bits of logic when acceleration works properly.
+  *@param {acceleration} the results of acceleration gets
+  */
+function onSuccess(acceleration){ 
         if(acceleration.x<-.03) { leftPad = leftPad + 5; }
         else if (acceleration.x>.03) { leftPad = leftPad - 5; }
-
-    //rightPad = getPositionY(acceleration.x);
-                
-     }
+};
             
-/*
-* Fires off an alert if there's an error in the collection of acceleration.
-*/
+/**
+ * Fires off an alert if there's an error in the collection of acceleration.
+ *@param {acceleration} results of an error acceleration get
+ */
 function onError(acceleration) {
-                
     alert('Error!');
-}
-            
-     var currentAccelerationX = 0;
-     var currentVelocityX = 0;
-     var currentPositionX = 50;
-            
-     var previousAccelerationX = 0;
-     var previousVelocityX = 0;
-     //var previousPositionX = 0;
-            
-     var TIME = .4;
+};
+      
+var currentAccelerationX = 0;
+var currentVelocityX = 0;
+var currentPositionX = 50;
+       
+var previousAccelerationX = 0;
+var previousVelocityX = 0;
+       
+var TIME = .4;
    
             
 /*
