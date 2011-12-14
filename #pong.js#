@@ -468,10 +468,6 @@ document.addEventListener("DOMContentLoaded", function() {
     displaySelection("inputMethodSelection");
 });
 
-/**
-   * Sets up the connection to the server and registers multiple event 
-   * listeners.
-**/
 function connectToServer(){	
     try{
    	socket = io.connect("10.150.1.204:3000"); 
