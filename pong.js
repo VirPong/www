@@ -450,7 +450,7 @@ function connectToServer(){
 	isGuest = confirm("Your login failed.  Would you like to proceed as a guest?");
 	if(isGuest){
 	    authLooping = true;
-	    socket.emit("auth", {username: "guest", password: "0000"});
+	    socket.emit("auth", {username: "guest", password: "1111"});
 	}else{
 	    alert("You will now be returned to the previous page.");
 	    history.go(-1);

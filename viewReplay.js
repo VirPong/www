@@ -247,11 +247,6 @@ function connectToServer(){
    	     " Returning to the previous page.");
    	history.go(-1);
     }
-    /* Retrievs the user names */
-    socket.on("gameInfo", function(data){
-	playerOneName = data.names[0];
-	palyerTwoName = data.names[1];
-    });
     /** Updates the state of the game (basically coordinates). */
     socket.on('replayInfo', function(data){
 	//expecting arrays for paddle1, paddle2, ballPos
@@ -262,10 +257,6 @@ function connectToServer(){
 	scoreLeft = Number(data.docs.scores[0]);
 	scoreRight = Number(data.docs.scores[1]);
 	draw();
-    });
-    socket.on('scoreUpdate', function(data){
-	scoreLeft = data.score[0];
-        scoreRight = data.score[1];
     });
     /**When the server sends a room list, the player can pick a room or
        start a new one
@@ -354,7 +345,7 @@ function displaySelection(selection, options){
 	    "width=\"100\"></canvas><br />";
 	initCanvas();
     }else if(selection == "selectGame"){
-	view.innerHTML = " <div id=\"mainWrapper\"><h1 align=\"center\">Which game do you want to view?</h1>"+
+	view.innerHTML = "<div id=\"mainWrapper\"><h1 align=\"center\">Which game do you want to view?</h1>"+
 	    options+"</div>";
     }else if(selection == "gameEnd"){
 	//A screen for the game finishing.  Also takes care of some cleanup.
